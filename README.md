@@ -4,7 +4,7 @@ DISCLAIMER:
 - ZIPPY IS BEING PUBLISHED AS AN INDEPENDENT PROJECT (BY DAREN PRESBITERO) AND IS IN NO WAY ASSOCIATED WITH, ENDORSED, OR SUPPORTED BY PALO ALTO NETWORKS.
 - ZIPPY IS HEREBY RELEASED TO THE PUBLIC AS UNSUPPORTED, OPEN SOURCE SOFTWARE
 
-Special thanks to Tom Van Meter, Doug Steele, Matt Isdell, George Balulis, Roman Galeone, and Jonathan Spigler. Zippy makes use of prior work by Mark Harman of [EXOsecure](https://exosecure.com/)
+Special thanks to Tom Van Meter, Geoffrey Carlisle, Doug Steele, Steve Weiss, Woody Walton, Matt Isdell, George Balulis, Roman Galeone, and Jonathan Spigler. Zippy makes use of prior work by Mark Harman of [EXOsecure](https://exosecure.com/)
 
 The Build:
 The ELK docker "stack" consists of 3 images with the following image tags:
