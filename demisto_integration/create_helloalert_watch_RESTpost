@@ -1,0 +1,39 @@
+{
+  "trigger": {
+    "schedule": {
+      "interval": "1m"
+    }
+  },
+  "input": {
+    "simple": {
+      "severity": 0,
+      "owner": "admin",
+      "name": "Hello World",
+      "type": "Unclassified",
+      "createInvestigation": true
+    }
+  },
+  "condition": {
+    "always": {}
+  },
+  "actions": {
+    "postincident": {
+      "webhook": {
+        "scheme": "https",
+        "host": "192.168.100.223",
+        "port": 443,
+        "method": "post",
+        "path": "/incident",
+        "params": {},
+        "headers": {
+          "Authorization": "tCGnMIto1urDKyp2IwsHMurLwGsLpzoq",
+          "content-type": "application/json",
+          "accept": "application/json"
+        },
+        "body": "{\"name\" : \"Hello World\",\"type\" : 
+\"Unclassified\",\"severity\" : 0,\"owner\" : 
+\"admin\",\"createInvestigation\" : true}"
+      }
+    }
+  }
+}

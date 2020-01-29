@@ -1,0 +1,21 @@
+----------------
+STAGING scripts:
+----------------
+cidrs-to-ips.py
+- Consumes cidrs.csv in format NET/MASK,DESIRED-ZONE,DESIRED-TAG
+- Produces a dictionary (YAML) file IP-SUBNET-TAGS.YAML for use by logstash.conf
+
+pullapplist.py
+- Connects to a NGFW API and pulls the applipedia list in XML format.
+- Saves the output to RAW_APPLIPEDIA.XML
+- Consumes the raw applipedia file and extracts fields for YAML file
+- Produces a dictionary (YAML) file APPLIPEDIA.YAML for use by logstash.conf
+	- FORMAT is [dependencies],risk,[default ports/protocols]
+	- For dependencies, ref: https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000ClV0CAK
+
+---------------
+RUNTIME script:
+---------------
+app.py
+- Runs the zippy web front-end
+- Runs the zippy API back-end

@@ -1,0 +1,45 @@
+curl -XPUT localhost:9200/_xpack/watcher/watch/Lateral?active=true -H 'Content-Type: application/json' -d '
+{
+  "trigger": {
+    "schedule": {
+      "interval": "15m"
+    }
+  },
+  "input": {
+    "simple": {
+      "owner": "admin",
+      "severity": 0,
+      "application": "SMBv1",
+      "destination": {
+        "port": "445",
+        "zone": "AD Servers",
+        "ip": "2.2.2.2"
+      },
+      "details": "Eternal Blue SMBv1 propagation activity discovered",
+      "source": {
+        "zone": "Test-Dev",
+        "port": "5006",
+        "ip": "1.1.1.1"
+      },
+      "type": "Lateral Movement"
+    }
+  },
+  "condition": {
+    "always": {}
+  },
+  "actions": {
+    "index-event": {
+      "transform": {
+        "script": {
+          "source": "def payload;payload=ctx.payload;payload.alert_time=ctx.trigger.triggered_time;payload.alert_uid=ctx.id;return payload",
+          "lang": "painless"
+        }
+      },
+      "index": {
+        "index": "<alerts-{now/d}>",
+        "doc_type": "doc"
+      }
+    }
+  }
+}
+'

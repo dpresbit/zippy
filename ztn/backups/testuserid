@@ -1,0 +1,42 @@
+<uid-message>
+ <version>1.0</version>
+ <type>update</type>
+ <payload>
+ <login>
+ <entry name="testdomain\dpresbit"
+ ip="192.168.35.132" timeout="8000">
+ </entry>
+ <entry name="ntpdomain\ntpserviceacct"
+ ip="91.189.89.199" timeout="8000">
+ </entry>
+ <entry name="ntpdomain\ntpserviceacct"
+ ip="91.189.91.157" timeout="8000">
+ </entry>
+ <entry name="testdomain\fwserviceacct"
+ ip="192.168.55.1" timeout="8000">
+ </entry>
+ <entry name="testdomain\fwserviceacct"
+ ip="192.168.45.1" timeout="8000">
+ </entry>
+ <entry name="testdomain\fwserviceacct"
+ ip="192.168.35.1" timeout="8000">
+ </entry>
+ <entry name="testdomain\fwserviceacct"
+ ip="192.168.45.20" timeout="0">
+ </entry>
+ </login>
+ <groups>
+ <entry name="group1">
+ <members> 
+ <entry name="user1"/>
+ <entry name="user2"/>
+ </members>
+ </entry>
+ <entry name="group2">
+ <members>
+ <entry name="user3"/>
+ </members>
+ </entry>
+ </groups>
+ </payload>
+</uid-message>

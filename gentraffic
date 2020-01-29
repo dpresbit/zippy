@@ -1,0 +1,20 @@
+#!/bin/bash
+
+CTR=0
+LOGCONTENT="`cat sample_traffic_log`"
+#echo $LOGCONTENT
+ 
+while :
+do
+	CTR=$((CTR + 1))
+#	DATESTAMP=`date '+%a %b %d %T %Y'`
+	
+	tput setaf 2;echo "GENERATING LOG #"$CTR" | TIMESTAMP: "$DATESTAMP
+#	tput setaf 7;echo "$DATESTAMP $LOGCONTENT" | nc -v -u -w 0 localhost 5550
+	tput setaf 7;echo "$LOGCONTENT" | nc -v -u -w 0 localhost 5550
+	tput setaf 1;echo "Press [CTRL+C] to stop.."
+	
+	tput setaf 7;echo ""
+
+	sleep 1
+done

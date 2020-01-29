@@ -1,0 +1,12 @@
+#Install the far-end hosts cert at: /etc/ssl/certs
+#Run: update-ca-certificates
+
+curl 'https://localhost:443/incident' -H 'content-type: application/json' -H 'accept: application/json' -H 'Authorization: ywE8KDDJLEHLwnILGEvMEKIzILHDHM9D' -d '
+{
+"name" : "Hello Malware Incident",
+"type" : "Malware",
+"severity" : 1,
+"owner" : "admin",
+"createInvestigation" : true
+}
+' -k

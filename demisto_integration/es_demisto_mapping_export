@@ -1,0 +1,378 @@
+{
+	"id": "29a67c2c-e4b7-4d96-86a0-fad134933a14",
+	"version": 32,
+	"modified": "2019-04-08T09:41:06.493024608-04:00",
+	"commitMessage": "",
+	"shouldPublish": false,
+	"shouldCommit": false,
+	"shouldPush": false,
+	"defaultIncidentType": "Unclassified",
+	"instanceId": "3ac6f8ad-b28f-4bbf-863d-a09cd2fea6e8",
+	"mapping": {
+		"C2Communication": {
+			"internalMapping": {
+				"Destination IP": {
+					"simple": "destination.ip",
+					"complex": null
+				},
+				"Destination Port": {
+					"simple": "destination.port",
+					"complex": null
+				},
+				"Destination Zone": {
+					"simple": "destination.zone",
+					"complex": null
+				},
+				"Source IP": {
+					"simple": "source.ip",
+					"complex": null
+				},
+				"Source Port": {
+					"simple": "source.port",
+					"complex": null
+				},
+				"Source Zone": {
+					"simple": "source.zone",
+					"complex": null
+				},
+				"details": {
+					"simple": "details",
+					"complex": null
+				},
+				"name": {
+					"simple": "alert_uid",
+					"complex": null
+				},
+				"owner": {
+					"simple": "owner",
+					"complex": null
+				},
+				"severity": {
+					"simple": "severity",
+					"complex": null
+				}
+			},
+			"dontMapEventToLabels": false
+		},
+		"Exfiltration": {
+			"internalMapping": {
+				"Destination IP": {
+					"simple": "destination.ip",
+					"complex": null
+				},
+				"Destination Port": {
+					"simple": "destination.port",
+					"complex": null
+				},
+				"Destination Zone": {
+					"simple": "destination.zone",
+					"complex": null
+				},
+				"Source IP": {
+					"simple": "source.ip",
+					"complex": null
+				},
+				"Source Port": {
+					"simple": "source.port",
+					"complex": null
+				},
+				"Source Zone": {
+					"simple": "source.zone",
+					"complex": null
+				},
+				"details": {
+					"simple": "details",
+					"complex": null
+				},
+				"name": {
+					"simple": "alert_uid",
+					"complex": null
+				},
+				"owner": {
+					"simple": "owner",
+					"complex": null
+				},
+				"severity": {
+					"simple": "severity",
+					"complex": null
+				}
+			},
+			"dontMapEventToLabels": false
+		},
+		"Exploit": {
+			"internalMapping": {
+				"Destination IP": {
+					"simple": "destination.ip",
+					"complex": null
+				},
+				"Destination Port": {
+					"simple": "destination.port",
+					"complex": null
+				},
+				"Destination Zone": {
+					"simple": "destination.zone",
+					"complex": null
+				},
+				"Source IP": {
+					"simple": "source.ip",
+					"complex": null
+				},
+				"Source Port": {
+					"simple": "source.port",
+					"complex": null
+				},
+				"Source Zone": {
+					"simple": "source.zone",
+					"complex": null
+				},
+				"details": {
+					"simple": "details",
+					"complex": null
+				},
+				"name": {
+					"simple": "alert_uid",
+					"complex": null
+				},
+				"owner": {
+					"simple": "owner",
+					"complex": null
+				},
+				"severity": {
+					"simple": "severity",
+					"complex": null
+				}
+			},
+			"dontMapEventToLabels": false
+		},
+		"Lateral Movement": {
+			"internalMapping": {
+				"Destination IP": {
+					"simple": "destination.ip",
+					"complex": null
+				},
+				"Destination Port": {
+					"simple": "destination.port",
+					"complex": null
+				},
+				"Destination Zone": {
+					"simple": "destination.zone",
+					"complex": null
+				},
+				"Source IP": {
+					"simple": "source.ip",
+					"complex": null
+				},
+				"Source Port": {
+					"simple": "source.port",
+					"complex": null
+				},
+				"Source Zone": {
+					"simple": "source.zone",
+					"complex": null
+				},
+				"details": {
+					"simple": "details",
+					"complex": null
+				},
+				"name": {
+					"simple": "alert_uid",
+					"complex": null
+				},
+				"owner": {
+					"simple": "owner",
+					"complex": null
+				},
+				"severity": {
+					"simple": "severity",
+					"complex": null
+				}
+			},
+			"dontMapEventToLabels": false
+		},
+		"Malware": {
+			"internalMapping": {
+				"Destination IP": {
+					"simple": "destination.ip",
+					"complex": null
+				},
+				"Destination Port": {
+					"simple": "destination.port",
+					"complex": null
+				},
+				"Destination Zone": {
+					"simple": "destination.zone",
+					"complex": null
+				},
+				"File Hash": {
+					"simple": "hash",
+					"complex": null
+				},
+				"Source IP": {
+					"simple": "source.ip",
+					"complex": null
+				},
+				"Source Port": {
+					"simple": "source.port",
+					"complex": null
+				},
+				"Source Zone": {
+					"simple": "source.zone",
+					"complex": null
+				},
+				"details": {
+					"simple": "details",
+					"complex": null
+				},
+				"name": {
+					"simple": "alert_uid",
+					"complex": null
+				},
+				"owner": {
+					"simple": "owner",
+					"complex": null
+				},
+				"severity": {
+					"simple": "severity",
+					"complex": null
+				}
+			},
+			"dontMapEventToLabels": false
+		},
+		"Reconnaissance": {
+			"internalMapping": {
+				"Destination IP": {
+					"simple": "destination.ip",
+					"complex": null
+				},
+				"Destination Port": {
+					"simple": "destination.port",
+					"complex": null
+				},
+				"Destination Zone": {
+					"simple": "destination.zone",
+					"complex": null
+				},
+				"Source IP": {
+					"simple": "source.ip",
+					"complex": null
+				},
+				"Source Port": {
+					"simple": "source.port",
+					"complex": null
+				},
+				"Source Zone": {
+					"simple": "source.zone",
+					"complex": null
+				},
+				"details": {
+					"simple": "details",
+					"complex": null
+				},
+				"name": {
+					"simple": "alert_uid",
+					"complex": null
+				},
+				"owner": {
+					"simple": "owner",
+					"complex": null
+				},
+				"severity": {
+					"simple": "severity",
+					"complex": null
+				}
+			},
+			"dontMapEventToLabels": false
+		},
+		"Vulnerability": {
+			"internalMapping": {
+				"CVE": {
+					"simple": "cve",
+					"complex": null
+				},
+				"CVSS": {
+					"simple": "cvss",
+					"complex": null
+				},
+				"Destination IP": {
+					"simple": "destination.ip",
+					"complex": null
+				},
+				"Destination Port": {
+					"simple": "destination.port",
+					"complex": null
+				},
+				"Destination Zone": {
+					"simple": "destination.zone",
+					"complex": null
+				},
+				"Source IP": {
+					"simple": "source.ip",
+					"complex": null
+				},
+				"Source Port": {
+					"simple": "source.port",
+					"complex": null
+				},
+				"Source Zone": {
+					"simple": "source.zone",
+					"complex": null
+				},
+				"details": {
+					"simple": "details",
+					"complex": null
+				},
+				"name": {
+					"simple": "alert_uid",
+					"complex": null
+				},
+				"owner": {
+					"simple": "owner",
+					"complex": null
+				},
+				"severity": {
+					"simple": "severity",
+					"complex": null
+				}
+			},
+			"dontMapEventToLabels": false
+		}
+	},
+	"unclassifiedCases": {},
+	"incidentSamples": [],
+	"custom": true,
+	"transformer": {
+		"simple": "",
+		"complex": {
+			"root": "type",
+			"filters": [
+				[
+					{
+						"operator": "isNotEmpty",
+						"left": {
+							"value": {
+								"simple": "type",
+								"complex": null
+							},
+							"isContext": true
+						},
+						"right": null,
+						"ignoreCase": false
+					}
+				]
+			],
+			"accessor": "",
+			"transformers": []
+		}
+	},
+	"keyTypeMap": {
+		"C2Communication": "C2Communication",
+		"Exfiltration": "Exfiltration",
+		"Exploit": "Exploit",
+		"Lateral Movement": "Lateral Movement",
+		"Malware": "Malware",
+		"Reconnaissance": "Reconnaissance",
+		"Vulnerability": "Vulnerability"
+	},
+	"brandName": "elasticsearch",
+	"instanceName": "elasticsearch_helloincident"
+}

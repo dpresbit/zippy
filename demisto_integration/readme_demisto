@@ -1,0 +1,36 @@
+#DEMISTO INTEGRATION
+
+#First, test the integration to see that it's working
+
+#Step 1:
+
+#Enable an ELK watcher by running the following command
+bash create_helloalert_watch
+# or enable ALL watches that make up an entire campaign run over 3 minutes with
+bash create_all_watches.sh
+#Verify the watcher exists and is enabled by going into Kibana and looking for an index called "alerts<date>" or by going into MANAGEMENT>WATCHER
+
+#Step 2:
+
+#Log into Demisto and go to SETTINGS and find the PALO ALTO NETWORKS APP and configure it with your IP of panorama or firewall
+#Now enable the ELASTICSEARCH app
+#Enable the app and go to the settings/gear icon.
+#Configure the IP of your docker host/ELK machine. (e.g. 192.168.100.20:9200)
+#Switch to NO CREDENTIALS if you don't have user/pass enabled for Elastic
+#Version should be 5.*
+#Enable the TRUST SERVER CERT and FETCH INCIDENTS
+#Incident Type can be UNCLASSIFIED (you will map the type to incident categories later)
+#INDEX is: alerts*
+#QUERY is: alert_time:*
+#INDEX TIME is: alert_time
+#Test the connection and it should be good
+
+#Step 3:
+
+#When you save the elastic config, you should now see a button MAPPING on the main settings page next to the elastic plugin
+#Under mappings, you should see EXPLOIT to the left - this shows up because the field TYPE coming from the watcher/alerts index in Elastic is set to Exploit (in the helloalerts watcher script)
+#Drag and drop the EXPLOIT bar to the right-hand side EXPLOITS category to complete the mapping.
+#NOTE: If you don't drag/drop the discovered TYPES coming in from ES to the TYPES in Demisto then your incidents will show the default category defined in the ES plugin settings (in this case UNCLASSIFIED)
+#FAST PATH:  Upload the following file to create fields and then auto-map the fields (click on the setting/gear icon in the mapping screen in Demisto server
+es_demisto_fields_export
+es_demisto_mapping_export

@@ -1,0 +1,22 @@
+#!/bin/bash
+
+if [ -z "$1" ]; then
+	echo "ERROR: No request specified"
+	echo ""
+	echo "USAGE: esquery <request>"
+	echo "Where *request* is one of the following requests"
+	echo ""
+	echo "     ecs:	Elastic Common Schema / PAN Template"
+	echo "     watch:All Elasticsearch Watches"
+	echo ""
+	exit
+fi
+
+REQUEST=""
+
+case "$1" in
+
+ecs)  echo "curl -XPUT localhost:9200/_template/ecs_pan_template";;
+watch)  echo "curl -XPUT localhost:9200/_template/ecs_pan_template"''
+
+esac

@@ -1,0 +1,96 @@
+#!/bin/bash
+
+if [ -z "$1" ]; then
+	echo "ERROR: No traffic type specified"
+	echo ""
+	echo "USAGE: genlog <traffic type>"
+	echo "Where *traffic type* is one of the following log types"
+	echo ""
+	echo "     traffic:	Traffic Logs"
+	echo "     threat:	Threat Logs"
+	echo "     url:	URL Logs"
+	echo "     wf:	WildFire Logs"
+	echo "     dataf:	Data Filtering Logs"
+	echo "     userid:	User-ID Logs"
+	echo "     tunnel:	Tunnel Logs"
+	echo "     hip:	HIP Logs"
+	echo "     system:	FW System Logs"
+	echo "     config:	FW Config Logs"
+	echo "     all:	All Log Types"
+	echo ""
+	exit
+fi
+
+LOGCONTENT=""
+PORT=""
+ALL=""
+
+case "$1" in
+
+traffic)  LOGCONTENT="`cat samples/sample_traffic_log`" PORT="5550";;
+threat)  LOGCONTENT="`cat samples/sample_threat_log`" PORT="5551";;
+url)  LOGCONTENT="`cat samples/sample_url_log`" PORT="5552";;
+wf)  LOGCONTENT="`cat samples/sample_wf_log`" PORT="5553";;
+dataf)  LOGCONTENT="`cat samples/sample_dataf_log`" PORT="5554";;
+userid)  LOGCONTENT="`cat samples/sample_userid_log`" PORT="5555";;
+tunnel)  LOGCONTENT="`cat samples/sample_tunnel_log`" PORT="5556";;
+hip)  LOGCONTENT="`cat samples/sample_HIP_log`" PORT="5557";;
+system)  LOGCONTENT="`cat samples/sample_panos_system_log`" PORT="5558";;
+config)  LOGCONTENT="`cat samples/sample_panos_config_log`" PORT="5559";;
+all)  ALL="1";LOGCONTENT="1";;
+
+esac
+
+if [ -z $LOGCONTENT ]; then
+	echo "ERROR: Unknown traffic specified"
+	echo ""
+	echo "USAGE: genlog <traffic type>"
+	echo "Where *traffic type* is one of the following"
+	echo ""
+	echo "     traffic:	Traffic Logs"
+	echo "     threat:	Threat Logs"
+	echo "     url:	URL Logs"
+	echo "     wf:	WildFire Logs"
+	echo "     dataf:	Data Filtering Logs"
+	echo "     userid:	User-ID Logs"
+	echo "     tunnel:	Tunnel Logs"
+	echo "     hip:	HIP Logs"
+	echo "     system:	FW System Logs"
+	echo "     config:	FW Config Logs"
+	echo "     all:	All Log Types"
+	echo ""
+	exit
+fi
+
+CTR=0
+
+while :
+do
+
+if [ -n "$ALL" ]; then
+case $((CTR % 10)) in
+        0) LOGCONTENT="`cat samples/sample_traffic_log`" PORT="5550";;
+        1) LOGCONTENT="`cat samples/sample_threat_log`" PORT="5551";;
+        2) LOGCONTENT="`cat samples/sample_url_log`" PORT="5552";;
+	3) LOGCONTENT="`cat samples/sample_wf_log`" PORT="5553";;
+	4) LOGCONTENT="`cat samples/sample_dataf_log`" PORT="5554";;
+	5) LOGCONTENT="`cat samples/sample_userid_log`" PORT="5555";;
+	6) LOGCONTENT="`cat samples/sample_tunnel_log`" PORT="5556";;
+	7) LOGCONTENT="`cat samples/sample_HIP_log`" PORT="5557";;
+	8) LOGCONTENT="`cat samples/sample_panos_system_log`" PORT="5558";;
+	9) LOGCONTENT="`cat samples/sample_panos_config_log`" PORT="5559";;
+esac
+fi
+
+	CTR=$((CTR + 1))
+#	DATESTAMP=`date '+%a %b %d %T %Y'`
+	
+	tput setaf 2;echo "GENERATING LOG #"$CTR
+#	tput setaf 7;echo "$DATESTAMP $LOGCONTENT" | nc -v -u -w 0 localhost 5550
+	tput setaf 7;echo "$LOGCONTENT" | nc -v -u -w 0 localhost $PORT
+	tput setaf 1;echo "Press [CTRL+C] to stop.."
+	
+	tput setaf 7;echo ""
+
+	sleep 1
+done

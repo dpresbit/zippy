@@ -1,0 +1,45 @@
+curl -XPUT localhost:9200/_xpack/watcher/watch/C2?active=true -H 'Content-Type: application/json' -d ' 
+{
+  "trigger": {
+    "schedule": {
+      "interval": "15m"
+    }
+  },
+  "input": {
+    "simple": {
+      "owner": "admin",
+      "severity": 0,
+      "application": "web-browsing",
+      "destination": {
+        "port": "80",
+        "zone": "Untrust",
+        "ip": "9.9.9.2"
+      },
+      "details": "Outbound C2 to shinobot.com",
+      "source": {
+        "zone": "Test-Dev",
+        "port": "5003",
+        "ip": "1.1.1.1"
+      },
+      "type": "C2Communication"
+    }
+  },
+  "condition": {
+    "always": {}
+  },
+  "actions": {
+    "index-event": {
+      "transform": {
+        "script": {
+          "source": "def payload;payload=ctx.payload;payload.alert_time=ctx.trigger.triggered_time;payload.alert_uid=ctx.id;return payload",
+          "lang": "painless"
+        }
+      },
+      "index": {
+        "index": "<alerts-{now/d}>",
+        "doc_type": "doc"
+      }
+    }
+  }
+}
+'

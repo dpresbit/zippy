@@ -1,0 +1,42 @@
+curl -XPUT localhost:9200/_xpack/watcher/watch/helloalert?active=true -H 'Content-Type: application/json' -d '
+{
+  "trigger": {
+    "schedule": {
+      "interval": "1m"
+    }
+  },
+  "input": {
+    "simple": {
+      "owner": "admin",
+      "severity": 0,
+      "destination_ip": "1.1.1.2",
+      "destination_port": "445",
+      "destination_zone": "AD Servers",
+      "source_port": "3240",
+      "source_zone": "DMZ-Web",
+      "network_application": "SMBv1",
+      "details": "WannaCrypt0r Malware Event - Exploit SMB Channel",
+      "type": "Exploit",
+      "source_ip": "1.1.1.1"
+    }
+  },
+  "condition": {
+    "always": {}
+  },
+  "actions": {
+    "index-event": {
+      "transform": {
+        "script": {
+          "source": "def 
+payload;payload=ctx.payload;payload.alert_time=ctx.trigger.triggered_time;payload.alert_uid=ctx.id;return payload",
+          "lang": "painless"
+        }
+      },
+      "index": {
+        "index": "<alerts-{now/d}>",
+        "doc_type": "doc"
+      }
+    }
+  }
+}
+'

@@ -1,0 +1,75 @@
+version: '3'
+
+services:
+#Container for ELK downloaded from https://www.docker.elastic.co/# 
+  elasticsearch:
+  #app name
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.4.2
+    container_name: elasticsearch
+    environment:
+      - cluster.name=docker-cluster
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    volumes:
+      - ./elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
+      - ./esdata:/usr/share/elasticsearch/data
+      - ./mappings:/usr/share/elasticsearch/mappings
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    #environment:
+      #ES_JAVA_OPTS: "-Xmx256m -Xms256m"
+    networks:
+      - elk
+#    command: bash /usr/share/elasticsearch/mappings/create_ecs_pan_mapping
+  logstash:
+  #app name
+    image: docker.elastic.co/logstash/logstash:7.4.2
+    container_name: logstash
+    volumes:
+      - ./logstash.yml:/usr/share/logstash/config/logstash.yml:ro
+      - ./logstash.conf:/usr/share/logstash/pipeline/logstash.conf:ro
+      - ./logstash.log:/usr/share/logstash/logstash.log
+      - ./ztn/ip-subnet-tags.yaml:/tmp/ip-subnet-tags.yaml
+      - ./ztn/applipedia.yaml:/tmp/applipedia.yaml
+    ports:
+      #5550 is for traffic logs from NGFW, 5551 for threats 5552 url, 5553 for wf, 5554 for dataf, 5555 for userid, 5556 for tunnel, 5557 HIP, 5558 panos-system, 5559 panos-config
+      - "5550:5550/udp"  
+      - "5551:5551/udp"
+      - "5552:5552/udp"
+      - "5553:5553/udp"
+      - "5554:5554/udp"
+      - "5555:5555/udp"
+      - "5556:5556/udp"
+      - "5557:5557/udp"
+      - "5558:5558/udp"
+      - "5559:5559/udp"
+      - "9600:9600"
+    environment:
+      LS_JAVA_OPTS: "-Xmx1024m -Xms1024m"
+    networks:
+      - elk
+    depends_on:
+      - elasticsearch
+
+  kibana:
+  #app name
+    image: docker.elastic.co/kibana/kibana:7.4.2
+    container_name: kibana
+    volumes:
+      - ./kibana.yml:/usr/share/kibana/config/kibana.yml:ro
+    ports:
+      - "5601:5601"
+    networks:
+      - elk
+    depends_on:
+      - elasticsearch
+
+networks:
+
+  elk:
+  #network name
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.172.0.0/16

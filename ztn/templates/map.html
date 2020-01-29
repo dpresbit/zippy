@@ -1,0 +1,133 @@
+<html>
+<head>
+    <script type="text/javascript" src="static/js/vis-network.min.js"></script>
+
+    <style type="text/css">
+        #mynetwork {
+            width: auto;
+            height: auto;
+            border: 1px solid lightgray;
+        }
+    </style>
+</head>
+<body>
+
+<center>
+
+<H3 style="font: 18px halvetica, arial, sans-serif;"><u><strong>Mapping Test</strong></u>
+
+<table border=0>
+<tr><td>
+Physical Segmentation Gateways (SGW) placed at client/workstation locations
+</td></tr>
+<tr><td>
+Physical North-South Data Center (DC-NS) SGW placed at ingress/egress of data center
+</td></tr>
+<tr><td>
+Virtual SGWs (VM-Series) placed on hypervisor within the DC
+</tr></td>
+</table>
+<br>
+
+<div id="mynetwork"></div>
+
+<!--
+
+assume we have input as follows:
+
+Event Timestamp, FW_IP, FW_NAME, SrcIP, DstIP, FP_hop, FP_peers, 
+
+## SESSION 1 - Client A to Server A ##
+2019-12-12 10:00:01.000, 1.1.1.1, FW-1, 10.10.10.10, 20.20.20.20, fw1-p1, p1
+2019-12-12 10:00:01.030, 4.1.1.1, FW-4, 10.10.10.10, 20.20.20.20, fw4-p1, p1
+2019-12-12 10:00:01.040, 8.1.1.1, FW-8, 10.10.10.10, 20.20.20.20, fw8-p1, p1
+
+## SESSION 2 - Client B to Server B ##
+2019-12-12 10:00:02.010, 2.1.1.1, FW-2, 11.11.11.11, 21.21.21.21, fw2-p2, p2
+2019-12-12 10:00:02.030, 5.1.1.1, FW-5, 11.11.11.11, 21.21.21.21, fw5-p2, p2
+2019-12-12 10:00:02.040, 8.1.1.1, FW-8, 11.11.11.11, 21.21.21.21, fw8-p2, p2
+
+## SESSION 3 - Client C to Server C ##
+2019-12-12 10:00:03.000, 1.1.1.1, FW-1, 12.12.12.12, 22.22.22.22, fw1-p3, p3
+2019-12-12 10:00:03.020, 6.1.1.1, FW-6, 12.12.12.12, 22.22.22.22, fw6-p3, p3
+2019-12-12 10:00:03.030, 8.1.1.1, FW-8, 12.12.12.12, 22.22.22.22, fw8-p3, p3
+
+## SESSION 4 - Client D to Server D ##
+2019-12-12 10:00:04.010, 3.1.1.1, FW-3, 13.13.13.13, 23.23.23.23, fw2-p4, p4
+2019-12-12 10:00:04.020, 7.1.1.1, FW-7, 13.13.13.13, 23.23.23.23, fw7-p4, p4
+2019-12-12 10:00:04.030, 8.1.1.1, FW-8, 13.13.13.13, 23.23.23.23, fw8-p4, p4
+
+-->
+
+<script type="text/javascript">
+    // create an array with nodes
+    var nodes = new vis.DataSet([
+
+	// Clients - format as 0###
+        {id: 0010, shape: 'circularImage', color:{border:'gray'}, image: 'static/client1.png', label: 'Client A'},
+        {id: 0011, shape: 'circularImage', color:{border:'gray'}, image: 'static/client1.png', label: 'Client B'},
+        {id: 0012, shape: 'circularImage', color:{border:'gray'}, image: 'static/client1.png', label: 'Client C'},
+        {id: 0013, shape: 'circularImage', color:{border:'gray'}, image: 'static/client1.png', label: 'Client D'},
+
+	// Segmentation Gateways/NGFWs - format as 1###
+	// NGFW #1,2,3 are physical FWs located near the clients
+	// NGFW #4 is the Data Center (DC) North-South physical gateway FW
+	// NGFW #5 is a virtual FW on a hypervisor
+        {id: 1001, shape: 'circularImage', color:{border:'gray'}, image: 'static/pan.png', label: 'NGFW-WS-1'},
+        {id: 1002, shape: 'circularImage', color:{border:'gray'}, image: 'static/pan.png', label: 'NGFW-WS-2'},
+        {id: 1003, shape: 'circularImage', color:{border:'gray'}, image: 'static/pan.png', label: 'NGFW-WS-3'},
+        {id: 1004, shape: 'circularImage', color:{border:'gray'}, image: 'static/pan.png', label: 'NGFW-DC-NS-1'},
+        {id: 1005, shape: 'circularImage', color:{border:'gray'}, image: 'static/panvm.png', label: 'NGFW-VM-EW-1'},
+
+	// Servers - format as 9###
+        {id: 9020, shape: 'circularImage', color:{border:'gray'}, image: 'static/server2.png', label: 'Server A (VM)'},
+        {id: 9021, shape: 'circularImage', color:{border:'gray'}, image: 'static/server2.png', label: 'Server B (VM)'},
+        {id: 9022, shape: 'circularImage', color:{border:'gray'}, image: 'static/server2.png', label: 'Server C (VM)'},
+        {id: 9023, shape: 'circularImage', color:{border:'gray'}, image: 'static/server2.png', label: 'Server D (PHY)'}
+    ]);
+
+    // create an array with edges
+    var edges = new vis.DataSet([
+	// Session 1 (red path) = Client to DC N/S-FW to VM-Series
+        {from: 0010, to: 1001, color:'red'},
+        {from: 1001, to: 1004, color:'red'},
+        {from: 1004, to: 1005, color:'red'},
+        {from: 1005, to: 9020, color:'red'},
+	// Session 2 (green path) = Client to DC N/S-FW to VM-Series
+        {from: 0011, to: 1002, color:'green'},
+        {from: 1002, to: 1004, color:'green'},
+        {from: 1004, to: 1005, color:'green'},
+        {from: 1005, to: 9021, color:'green'},
+	// Session 3 (orange path) = Client to DC N/S-FW to VM-Series
+        {from: 0012, to: 1003, color:'orange'},
+        {from: 1003, to: 1004, color:'orange'},
+        {from: 1004, to: 1005, color:'orange'},
+        {from: 1005, to: 9022, color:'orange'},
+	// Session 4 (blue path) = Client to DC N/S-FW to physical server
+        {from: 0013, to: 1001, color:'blue'},
+        {from: 1001, to: 1004, color:'blue'},
+        {from: 1004, to: 9023, color:'blue'},
+	// Session 5 (black path) = Client to DC N/S-FW to physical server 
+        {from: 0012, to: 1003, color:'black'},
+        {from: 1003, to: 1004, color:'black'},
+        {from: 1004, to: 9023, color:'black'},
+        {from: 1008, to: 9021, color:'black'}
+    ]);
+
+    // create a network
+    var container = document.getElementById('mynetwork');
+
+    // provide the data in the vis format
+    var data = {
+        nodes: nodes,
+        edges: edges
+    };
+    var options = {
+	nodes:{size:30}
+    };
+
+    // initialize your network!
+    var network = new vis.Network(container, data, options);
+</script>
+</body>
+</html>

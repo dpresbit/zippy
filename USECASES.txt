@@ -1,0 +1,8 @@
+High level Stakeholders:  SOC analyst, Management
+
+Use cases/Attack Scenarios:  Delay between data and control plane, Beaconing host(s), browser-based mining, advanced/new attacks (custom packets, fileless, next-gen metasploit paylods and delivery).  Connections-per-second view (resource view mapping to our published rates), logs per second delay between data and control planes.
+
+Other: CVE identified/mapped, bandwidth monitoring on FW interfaces, hello world to Demisto.
+
+reach goal: netflow and NOC view.  ML unsupervised learning.
+
