@@ -16,9 +16,12 @@ api = Api(app)
 
 #PANORAMA
 isFirewall = False
-apikey = "LUFRPT1JNjgvemNqU2FmdzJUZWQ2M203UmJESHFTVGc9MnpWTXNwb21uc2diRVZrQVQvdGJlcmxOYzVDZUNIT05uaUdDcFVxTUxMZWt3Q2ZBdHNEZmtkUXJiZ3VOT2ljVw=="
-panIP = "192.168.55.5"
-deviceGroup = "DG1"
+apikey = "LUFRPT1UTm52RWNPWW1YbE5UbUhPMTFrcGh0ZHVmQ1E9Q2p2NWtHcnVkRjJwUGI0bW9rOGZUdU1Na0YzTUlkS1UvcTdTWC9HZ1drWnFGK1VUcGdlOEJIL0dtRE5HVHBLbQ=="
+panIP = "10.70.219.54"
+# For Panorama, if panShared = True, then DeviceGroup will be ignored
+# and policy will be placed within the SHARED rulebase for all FWs
+deviceGroup = "All"
+panShared = False
 
 #
 #Back-end API calls to PAN Firewall or Panorama
@@ -30,12 +33,22 @@ def panAPI_addPolicy():
 	# Debug print all args in JSON format to the browser
 #	return args
 
+	# assume up front that isFirewall = True, or panShared = False
+#        apiurl = "https://" + panIP.strip() + "/api/?type=config&action=set&xpath=/config/devices/entry[@name='localhost.localdomain']/"
+
+#	if not panShared:
+#        	apiurl = "https://" + panIP.strip() + "/api/?type=config&action=set&xpath=/config/devices/entry[@name='localhost.localdomain']/"
+#	else:
+#        	apiurl = "https://" + panIP.strip() + "/api/?type=config&action=set&xpath=/config/shared/pre-rulebase/security/rules/entry[@name='localhost.localdomain']/entry[@name='"
         apiurl = "https://" + panIP.strip() + "/api/?type=config&action=set&xpath=/config/devices/entry[@name='localhost.localdomain']/"
 
 	if isFirewall:
 		apiurl += "vsys/entry[@name='" + vSys + "']/rulebase/security/rules/entry[@name='"
-	else:
-		apiurl += "device-group/entry[@name='" + deviceGroup  + "']/pre-rulebase/security/rules/entry[@name='"
+	else: #is Panorama
+		if not panShared: #Enter policy into DG, not shared
+			apiurl += "device-group/entry[@name='" + deviceGroup  + "']/pre-rulebase/security/rules/entry[@name='"
+		else:
+			apiurl = "https://" + panIP.strip() + "/api/?type=config&action=set&xpath=/config/shared/pre-rulebase/security/rules/entry[@name='"
 
         apiurl += args['policyname'].strip()
         apiurl += "']&element="
