@@ -176,15 +176,27 @@ TODO: Need to gather applist apps 'isdefault' field to paint green or red
 <input type="hidden" name="allapps" value="{{allapps}}"/>
 {% endif %}
 
+<input type="hidden" name="dgname" value="{{dgname}}"/>
+
 {% if dgname != "" %}
+
 <div class="col-sm-8 form-group">
-Apply to Device Group <span class="btn btn-sm btn-secondary">
-{{dgname}}
-	{% if dgname != "Shared" %}
+{% set dglist = dgname.split(',') %}
+
+Apply to Device Group(s): 
+
+{% for dg in dglist %}
+<span class="btn btn-sm btn-info">
+{{dg}}
+<!-- {% if dgname != "Shared" %}
 		<span class="badge badge-light badge-pill">{{dgid}}</span>
 	{% endif %}
 </span>
+-->
+</span>
+{% endfor %}
 </div>
+
 {% endif %}
 
 <div class="col-sm-8 form-group">

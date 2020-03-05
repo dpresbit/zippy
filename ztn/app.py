@@ -19,23 +19,26 @@ api = Api(app)
 isFirewall = False
 apikey = "LUFRPT1UTm52RWNPWW1YbE5UbUhPMTFrcGh0ZHVmQ1E9Q2p2NWtHcnVkRjJwUGI0bW9rOGZUdU1Na0YzTUlkS1UvcTdTWC9HZ1drWnFGK1VUcGdlOEJIL0dtRE5HVHBLbQ=="
 panIP = "10.70.219.54"
-# For Panorama, if panShared = True, then DeviceGroup will be ignored
-# and policy will be placed within the SHARED rulebase for all FWs
-#deviceGroup = "All"
-#panShared = False
-# FUTURE: AUTO DETECTION OF DEVICE GROUP
-# Step 1 - Obtain DG ID from Traffic Log (DeviceGroup Hierarchy 1)
-# Step 2 - Query Panorama API to look up DG name based on ID.
+# If you want to manually override auto-devicegroup detection, uncomment
+# if deviceGroup is set to "Shared" then will manually set all policies to shared group
+#deviceGroup = "MyDG"
+#deviceGroup = "Shared"
+#set deviceGroup to "" blank to enable auto-DG detection
+deviceGroup = ""
+
+# FUTURE: Uncomment following line if you want multi-FW traversal flows that
+# to place the policy into SHARED device group instead of all individual DGs
+#multiDGuseShared = True
 
 #
 #Back-end API calls to PAN Firewall or Panorama
 #
-def panAPI_addPolicy():
+def panAPI_addPolicy(dg=""):
 
 	context = ""
 	addsvcresult = ""
         args = request.args
-	DgName = ""
+
 	# Debug print all args in JSON format to the browser
 #	return args
 
@@ -43,12 +46,20 @@ def panAPI_addPolicy():
 
 	if isFirewall:
 		apiurl += "vsys/entry[@name='" + vSys + "']/rulebase/security/rules/entry[@name='"
-	else: #is Panorama, check for DeviceGroup ID
-		DgName = getDgName(args['dgid'])
-		if DgName != "":
-			apiurl += "device-group/entry[@name='" + DgName  + "']/pre-rulebase/security/rules/entry[@name='"
-		else: #Got back blank DG name, so place into SHARED Rules
-			apiurl = "https://" + panIP.strip() + "/api/?type=config&action=set&xpath=/config/shared/pre-rulebase/security/rules/entry[@name='"
+	else:
+		if deviceGroup != "":
+			# Manual DG
+			if deviceGroup == "Shared":
+				# shared device group
+				apiurl = "https://" + panIP + "/api/?type=config&action=set&xpath=/config/shared/pre-rulebase/security/rules/entry[@name='"
+				dg = "shared"
+			else:
+				# Manually specified device group of some name
+				apiurl += "device-group/entry[@name='" + deviceGroup  + "']/pre-rulebase/security/rules/entry[@name='"
+				dg = deviceGroup
+		else:
+			# Automate It!
+			apiurl += "device-group/entry[@name='" + dg  + "']/pre-rulebase/security/rules/entry[@name='"
 
         apiurl += args['policyname'].strip()
         apiurl += "']&element="
@@ -58,7 +69,7 @@ def panAPI_addPolicy():
 
         for akey, aval in args.iteritems():
 		# Do not parse certain field values, already done or N/A
-		if akey != "policyname" and akey!= "docid" and akey!= "description" and akey != "fp_service" and akey != "allapps" and akey != "incldeps":
+		if akey != "policyname" and akey!= "docid" and akey!= "description" and akey != "fp_service" and akey != "allapps" and akey != "incldeps" and akey!="dgname":
 			# If service is NOT application-default, then normalize value
 			if akey == "service":
 				if "application-default" in aval:
@@ -119,18 +130,12 @@ def panAPI_addPolicy():
 
 	if "success" in addPolicyResponse.text:
 		if not applist:
-#			context = "to Firewall "
-#			if not isFirewall:
-#				if panShared:
-#					context = "to Panorama-Shared "
-#				else:
-#					context = "to Panorama-DG [" + deviceGroup + "]"
-			r = update_ack(args["docid"],"True","Interesting: Policy Applied " + context + "with Name:" + args['policyname'].strip() + "]",",".join(applist))
+			r = update_ack(args["docid"],"True","Interesting: Policy Applied " + context + "with Name:" + args['policyname'].strip() + " and DG: " + dg + "]",",".join(applist))
 		else:
-			r = update_ack(args["fp_service"],"True","Interesting: Policy Applied " + context + "with Name:" + args['policyname'].strip() + "]",",".join(applist))
-		return addsvcresult + "Successfully applied policy Name:" + args['policyname'].strip() + context + " with IP:" + panIP
+			r = update_ack(args["fp_service"],"True","Interesting: Policy Applied " + context + "with Name:" + args['policyname'].strip() + " and DG: " + dg + "]",",".join(applist))
+		return addsvcresult + "Successfully applied policy Name:" + args['policyname'].strip() + context + " with IP:" + panIP + " to device group: " + dg
 	else:
-		return addsvcresult + "Could not apply policy to " + panIP + "\n Response: \n" + addPolicyResponse.text
+		return addsvcresult + "Could not apply policy to " + panIP  + " in device group " + dg + " [Response: " + addPolicyResponse.text
 
 def panAPI_addService(svcproto, svcport):
 
@@ -220,7 +225,7 @@ def get_list(fp_service):
 def getDgName(DgID):
 
 	# If setting is non-panorama (direct to firewall) return blank
-	if isFirewall: return ""
+	if deviceGroup != "": return deviceGroup
 
 	# Not a firewall, set to Panorama
 	if DgID == "" or DgID == "0": return "Shared"
@@ -246,12 +251,34 @@ def getDgName(DgID):
 		# No success in API
 		print "Error in API Response while querying for DG ID " + DgID + " \nResponse: " + DgResponse.text
 		return "Shared"
+
+def getDgList(fpPeer):
+	if not fpPeer: return
+	r = requests.get("http://localhost:9200/traffic.peers/_search?q=fingerprint.peer:" + fpPeer, verify=False)
+	print "ELASTIC QUERY: http://localhost:9200/traffic.peers/_search?q=fingerprint.peer:" + fpPeer
+	print r.text
+	peerList = r.json()
+        if "error" in peerList or str(peerList['hits']['total']['value']) == "0": return
+	dgList = []
+	for p in peerList['hits']['hits']:
+		if p['_source']['panw.DGH1'] not in dgList: dgList.append(p['_source']['panw.DGH1'])
+	return dgList
 # Front-end web form and network map
 #
 @app.route("/")
 def test():
+	dgnameList = []
+	dgname = ""
 	applist = get_list(request.args.get("fp_service"))
-	dgname = getDgName(request.args.get("dgid"))
+	# Get peerID and see if any more DeviceGroups exist
+	dgList = getDgList(request.args.get("fp_peer"))
+	if dgList:
+		for dg in dgList:
+			dgnameList.append(getDgName(dg))
+		dgname = ",".join(dgnameList)
+	else:
+		dgname = getDgName(request.args.get("dgid"))
+
 	return render_template('test.html', docid=request.args.get("docid"), appdefault=request.args.get('appdefault'), service=request.args.get('service'), srczone=request.args.get('srczone'), desired_srczone=request.args.get('desired_srczone'), dstzone=request.args.get('dstzone'), desired_dstzone=request.args.get('desired_dstzone'), srcip=request.args.get('srcip'), srcnet=request.args.get('srcnet'), desired_srctag=request.args.get('desired_srctag'), srcuser=request.args.get('srcuser'), dstip=request.args.get('dstip'), dstnet=request.args.get('dstnet'), desired_dsttag=request.args.get('desired_dsttag'), application=request.args.get('application'), apprisk=request.args.get('apprisk'),  fp_service=request.args.get('fp_service'), appdefaultpps=request.args.get('appdefaultpps'), dstport=request.args.get('dstport'), applist=applist, appdeps=request.args.get('appdeps'), dgid=request.args.get('dgid'), dgname=dgname)
 
 @app.route("/map.html")
@@ -263,7 +290,18 @@ def map():
 #
 class addPolicy(Resource):
     def get(self):
-        return {'result': panAPI_addPolicy()}
+	dgList = []
+	results = []
+	dgList = request.args.get('dgname').split(",")
+
+	if deviceGroup == "":
+		# Auto-Discovery and implement Device Groups
+		for dg in dgList:
+			results.append("result: " + panAPI_addPolicy(dg))
+	else:
+		results.append("result: " + panAPI_addPolicy())
+
+	return results
 
 api.add_resource(addPolicy, '/addpolicy')
 
@@ -275,7 +313,7 @@ api.add_resource(ack, '/ack')
 
 class DgLookup(Resource):
     def get(self):
-        return getDgName(request.args.get('dgid'))
+        return getDgList(request.args.get('fp'))
 
 api.add_resource(DgLookup, '/dglookup')
 
