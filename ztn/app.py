@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request
 from flask_restful import Resource, Api
 import requests
+import xml.etree.ElementTree as ET
 
 # App config
 app = Flask(__name__)
@@ -20,34 +21,33 @@ apikey = "LUFRPT1UTm52RWNPWW1YbE5UbUhPMTFrcGh0ZHVmQ1E9Q2p2NWtHcnVkRjJwUGI0bW9rOG
 panIP = "10.70.219.54"
 # For Panorama, if panShared = True, then DeviceGroup will be ignored
 # and policy will be placed within the SHARED rulebase for all FWs
-deviceGroup = "All"
-panShared = False
+#deviceGroup = "All"
+#panShared = False
+# FUTURE: AUTO DETECTION OF DEVICE GROUP
+# Step 1 - Obtain DG ID from Traffic Log (DeviceGroup Hierarchy 1)
+# Step 2 - Query Panorama API to look up DG name based on ID.
 
 #
 #Back-end API calls to PAN Firewall or Panorama
 #
 def panAPI_addPolicy():
 
+	context = ""
 	addsvcresult = ""
         args = request.args
+	DgName = ""
 	# Debug print all args in JSON format to the browser
 #	return args
 
-	# assume up front that isFirewall = True, or panShared = False
-#        apiurl = "https://" + panIP.strip() + "/api/?type=config&action=set&xpath=/config/devices/entry[@name='localhost.localdomain']/"
-
-#	if not panShared:
-#        	apiurl = "https://" + panIP.strip() + "/api/?type=config&action=set&xpath=/config/devices/entry[@name='localhost.localdomain']/"
-#	else:
-#        	apiurl = "https://" + panIP.strip() + "/api/?type=config&action=set&xpath=/config/shared/pre-rulebase/security/rules/entry[@name='localhost.localdomain']/entry[@name='"
         apiurl = "https://" + panIP.strip() + "/api/?type=config&action=set&xpath=/config/devices/entry[@name='localhost.localdomain']/"
 
 	if isFirewall:
 		apiurl += "vsys/entry[@name='" + vSys + "']/rulebase/security/rules/entry[@name='"
-	else: #is Panorama
-		if not panShared: #Enter policy into DG, not shared
-			apiurl += "device-group/entry[@name='" + deviceGroup  + "']/pre-rulebase/security/rules/entry[@name='"
-		else:
+	else: #is Panorama, check for DeviceGroup ID
+		DgName = getDgName(args['dgid'])
+		if DgName != "":
+			apiurl += "device-group/entry[@name='" + DgName  + "']/pre-rulebase/security/rules/entry[@name='"
+		else: #Got back blank DG name, so place into SHARED Rules
 			apiurl = "https://" + panIP.strip() + "/api/?type=config&action=set&xpath=/config/shared/pre-rulebase/security/rules/entry[@name='"
 
         apiurl += args['policyname'].strip()
@@ -119,10 +119,16 @@ def panAPI_addPolicy():
 
 	if "success" in addPolicyResponse.text:
 		if not applist:
-			r = update_ack(args["docid"],"True","Interesting: Policy Applied [" + args['policyname'].strip() + "]",",".join(applist))
+#			context = "to Firewall "
+#			if not isFirewall:
+#				if panShared:
+#					context = "to Panorama-Shared "
+#				else:
+#					context = "to Panorama-DG [" + deviceGroup + "]"
+			r = update_ack(args["docid"],"True","Interesting: Policy Applied " + context + "with Name:" + args['policyname'].strip() + "]",",".join(applist))
 		else:
-			r = update_ack(args["fp_service"],"True","Interesting: Policy Applied [" + args['policyname'].strip() + "]",",".join(applist))
-		return addsvcresult + "Successfully applied policy [" + args['policyname'].strip() + "] to " + panIP
+			r = update_ack(args["fp_service"],"True","Interesting: Policy Applied " + context + "with Name:" + args['policyname'].strip() + "]",",".join(applist))
+		return addsvcresult + "Successfully applied policy Name:" + args['policyname'].strip() + context + " with IP:" + panIP
 	else:
 		return addsvcresult + "Could not apply policy to " + panIP + "\n Response: \n" + addPolicyResponse.text
 
@@ -157,6 +163,13 @@ def panAPI_addService(svcproto, svcport):
                 return "Could not add service to " + panIP + "\n\nResponse:\n" + addServiceResponse.text
 
 def update_ack(docid, value, action, applist=""):
+# FUTURE
+# To update all docs with subnet/CIDR
+#
+# payload = { "query" : { "term" : { "source.subnet.keyword" : "192.168.65.0/24" } },"script" : { "source" : "ctx._source.Acknowledged = 'true';ctx['_source']['Action Log'] = 'test'" } }
+# r = requests.post("http://localhost:9200/traffic.apps/_update_by_query/", json=payload)
+
+
 	arsplist = ""
 
 	print "\n\nAPPLIST: " + str(applist) + "\n\n"
@@ -204,13 +217,42 @@ def get_list(fp_service):
 	#else:
 	#	return "unsuccessful, please try again" + " Result: " + r.text
 
+def getDgName(DgID):
+
+	# If setting is non-panorama (direct to firewall) return blank
+	if isFirewall: return ""
+
+	# Not a firewall, set to Panorama
+	if DgID == "" or DgID == "0": return "Shared"
+
+	apiurl = "https://" + panIP + "/api/?type=op&cmd=<show><dg-hierarchy></dg-hierarchy></show>"
+	apiurl += "&key=" + apikey
+
+	print "Get DGH1 Name: ID = " + DgID
+
+        DgResponse = requests.get(apiurl, verify=False)
+
+        if "success" in DgResponse.text:
+		root = ET.fromstring(DgResponse.content)
+		dgList = root.find('result').find('dg-hierarchy').findall('dg')
+		for dg in dgList:
+			if dg.attrib['dg_id'] == DgID:
+                		print "Found Name for DGH1 ID [" + DgID + "]: Name = " + dg.attrib['name'] + "\nResponse: " + DgResponse.text
+				return dg.attrib['name']
+                # If not return yet, DG name not found - even if API response okay
+		print "Did not find DG name for ID " + DgID + "\nResponse: " + DgResponse.text
+		return "Shared"
+	else:
+		# No success in API
+		print "Error in API Response while querying for DG ID " + DgID + " \nResponse: " + DgResponse.text
+		return "Shared"
 # Front-end web form and network map
 #
 @app.route("/")
 def test():
 	applist = get_list(request.args.get("fp_service"))
-#	return applist
-	return render_template('test.html', docid=request.args.get("docid"), appdefault=request.args.get('appdefault'), service=request.args.get('service'), srczone=request.args.get('srczone'), desired_srczone=request.args.get('desired_srczone'), dstzone=request.args.get('dstzone'), desired_dstzone=request.args.get('desired_dstzone'), srcip=request.args.get('srcip'), srcnet=request.args.get('srcnet'), desired_srctag=request.args.get('desired_srctag'), srcuser=request.args.get('srcuser'), dstip=request.args.get('dstip'), dstnet=request.args.get('dstnet'), desired_dsttag=request.args.get('desired_dsttag'), application=request.args.get('application'), apprisk=request.args.get('apprisk'),  fp_service=request.args.get('fp_service'), appdefaultpps=request.args.get('appdefaultpps'), dstport=request.args.get('dstport'), applist=applist, appdeps=request.args.get('appdeps'))
+	dgname = getDgName(request.args.get("dgid"))
+	return render_template('test.html', docid=request.args.get("docid"), appdefault=request.args.get('appdefault'), service=request.args.get('service'), srczone=request.args.get('srczone'), desired_srczone=request.args.get('desired_srczone'), dstzone=request.args.get('dstzone'), desired_dstzone=request.args.get('desired_dstzone'), srcip=request.args.get('srcip'), srcnet=request.args.get('srcnet'), desired_srctag=request.args.get('desired_srctag'), srcuser=request.args.get('srcuser'), dstip=request.args.get('dstip'), dstnet=request.args.get('dstnet'), desired_dsttag=request.args.get('desired_dsttag'), application=request.args.get('application'), apprisk=request.args.get('apprisk'),  fp_service=request.args.get('fp_service'), appdefaultpps=request.args.get('appdefaultpps'), dstport=request.args.get('dstport'), applist=applist, appdeps=request.args.get('appdeps'), dgid=request.args.get('dgid'), dgname=dgname)
 
 @app.route("/map.html")
 def map():
@@ -230,6 +272,12 @@ class ack(Resource):
 	return update_ack(request.args.get('docid'),request.args.get('value'),request.args.get('action'))
 
 api.add_resource(ack, '/ack')
+
+class DgLookup(Resource):
+    def get(self):
+        return getDgName(request.args.get('dgid'))
+
+api.add_resource(DgLookup, '/dglookup')
 
 if __name__ == "__main__":
     app.run("0.0.0.0",port=9999,debug=True)
