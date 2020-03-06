@@ -66,6 +66,7 @@ def panAPI_addPolicy(dg=""):
 	apiurl += "<description>" + args['description'] + "\nService Fingerprint: " + args['fp_service'] + "</description>"
 
 	applist = []
+	sourceIsSubnet,destIsSubnet = False,False
 
         for akey, aval in args.iteritems():
 		# Do not parse certain field values, already done or N/A
@@ -99,10 +100,15 @@ def panAPI_addPolicy(dg=""):
 			# Make sure source-user has a value, or do not add to query
 			if (akey != "source-user") or (akey == "source-user" and aval != ""):
 
+				# Process all other keys
+
+				# Check if subnet present and if so, flag for batch update function
+				if akey == "source" and aval.find("/")!=-1: sourceIsSubnet = True
+				if akey == "destination" and aval.find("/")!=-1: destIsSubnet = True
+
 				apiurl += "<" + akey.strip() + ">"
 
 				if (akey == "application"):
-					print applist
 					if applist:
 						# application list exists, so add each member
 						for a in applist: apiurl += "<member>" + a + "</member>"
@@ -130,9 +136,9 @@ def panAPI_addPolicy(dg=""):
 
 	if "success" in addPolicyResponse.text:
 		if not applist:
-			r = update_ack(args["docid"],"True","Interesting: Policy Applied " + context + "with Name:" + args['policyname'].strip() + " and DG: " + dg + "]",",".join(applist))
+			r = update_ack(args["docid"],"True","Interesting: Policy Applied " + context + "with Name:" + args['policyname'].strip() + " and DG: " + dg + "]",args["application"],sourceIsSubnet,destIsSubnet,args['source'],args['destination'])
 		else:
-			r = update_ack(args["fp_service"],"True","Interesting: Policy Applied " + context + "with Name:" + args['policyname'].strip() + " and DG: " + dg + "]",",".join(applist))
+			r = update_ack(args["fp_service"],"True","Interesting: Policy Applied " + context + "with Name:" + args['policyname'].strip() + " and DG: " + dg + "]",",".join(applist),sourceIsSubnet,destIsSubnet,args['source'],args['destination'])
 		return addsvcresult + "Successfully applied policy Name:" + args['policyname'].strip() + context + " with IP:" + panIP + " to device group: " + dg
 	else:
 		return addsvcresult + "Could not apply policy to " + panIP  + " in device group " + dg + " [Response: " + addPolicyResponse.text
@@ -167,38 +173,89 @@ def panAPI_addService(svcproto, svcport):
         else:
                 return "Could not add service to " + panIP + "\n\nResponse:\n" + addServiceResponse.text
 
-def update_ack(docid, value, action, applist=""):
+def update_ack(docid, value, action, applist="", sourceIsSubnet=False, destIsSubnet=False, sIP="", dIP=""):
+
 # FUTURE
 # To update all docs with subnet/CIDR
 #
 # payload = { "query" : { "term" : { "source.subnet.keyword" : "192.168.65.0/24" } },"script" : { "source" : "ctx._source.Acknowledged = 'true';ctx['_source']['Action Log'] = 'test'" } }
 # r = requests.post("http://localhost:9200/traffic.apps/_update_by_query/", json=payload)
 
-
+	docCount = 0
 	arsplist = ""
 
-	print "\n\nAPPLIST: " + str(applist) + "\n\n"
+	print "\nAPPLIST: " + str(applist) + "\n"
 
 	payload = {"doc" : {"Acknowledged":value,"Action Log":action} }
 
 	if "," in applist:
 		applist = applist.split(",")
 		for app in applist:
-			a = requests.get("http://localhost:9200/traffic.apps/_search?q=fingerprint.service:" + docid + " AND network.application:" + app + "&_source_includes=fingerprint.app", verify=False)
-			print "ELASTIC QUERY: http://localhost:9200/traffic.apps/_search?q=fingerprint.service:" + docid + " AND network.application:" + app + "&_source_includes=fingerprint.app"
-			print a.text
-			arsplist = a.json()
-        		if "error" in arsplist or str(arsplist['hits']['total']['value']) == "0": continue
-			curapp = arsplist['hits']['hits'][0]['_source']['fingerprint.app']
-			r = requests.post("http://localhost:9200/traffic.apps/_update/"+curapp, json=payload)
+			if sourceIsSubnet == False and destIsSubnet == False:
+				# Single host, single app entry but have to find docID/fingerprint.app :)
+				a = requests.get("http://localhost:9200/traffic.apps/_search?q=fingerprint.service:" + docid + " AND network.application:" + app + "&_source_includes=fingerprint.app", verify=False)
+				print "ELASTIC QUERY: http://localhost:9200/traffic.apps/_search?q=fingerprint.service:" + docid + " AND network.application:" + app + "&_source_includes=fingerprint.app"
+				arsplist = a.json()
+		       		if "error" in arsplist or str(arsplist['hits']['total']['value']) == "0": continue
+				curapp = arsplist['hits']['hits'][0]['_source']['fingerprint.app']
+				r = requests.post("http://localhost:9200/traffic.apps/_update/"+curapp, json=payload)
+				docCount +=1
+			else:
+				# Entire Subnet for source and/or dest - iterate
+				qUrl = 'http://localhost:9200/traffic.apps/_search?q=network.application:' + app + ' AND '
+				if sourceIsSubnet:
+					qUrl += 'source.subnet:"' + sIP + '"'
+				else:
+					qUrl += 'source.ip:"' + sIP + '"'
+				if destIsSubnet:
+					qUrl += ' AND destination.subnet:"' + dIP + '"'
+				else:
+					qUrl += ' AND destination.ip:"' + dIP + '"'
+				qUrl += '&size=10000'
+				print "\nACK ALL SOURCE SUBNET [" + sIP + "] QUERY: " + qUrl + "\n"
+				r = requests.get(qUrl,verify=False)
+				rlist = r.json()
+				if "error" in rlist: return ""
+				if str(rlist['hits']['total']['value']) == "0": return ""
+				print "\nHIT COUNT FOR APP :" + str(rlist['hits']['total']['value']) + "\n\n"
+				for s in rlist['hits']['hits']:
+					r = requests.post("http://localhost:9200/traffic.apps/_update/"+s['_id'], json=payload)
+					print "UPDATED DOC ID " + s['_id'] + ": Result = " + r.json()['result'] 
+					docCount += 1
 	else:
-		r = requests.post("http://localhost:9200/traffic.apps/_update/"+docid, json=payload)
+		# Single app
+		if sourceIsSubnet == False and destIsSubnet == False:
+			# Single host, single app, single doc ID entry :)
+			r = requests.post("http://localhost:9200/traffic.apps/_update/"+docid, json=payload)
+			docCount = 1
+		else:
+			# Entire Subnet for source and/or dest - iterate
+			qUrl = 'http://localhost:9200/traffic.apps/_search?q=network.application=' + applist + ' AND '
+			if sourceIsSubnet:
+				qUrl += 'source.subnet:"' + sIP + '"'
+			else:
+				qUrl += 'source.ip:"' + sIP + '"'
+			if destIsSubnet:
+				qUrl += ' AND destination.subnet:"' + dIP + '"'
+			else:
+				qUrl += ' AND destination.ip:"' + dIP + '"'
+			qUrl += '&size=10000'
+			print "\nACK ALL SOURCE SUBNET [" + sIP + "] QUERY: " + qUrl + "\n"
+			r = requests.get(qUrl,verify=False)
+			rlist = r.json()
+			if "error" in rlist: return ""
+			if str(rlist['hits']['total']['value']) == "0": return ""
+			print "\nHIT COUNT:" + str(rlist['hits']['total']['value']) + "\n\n"
+			for s in rlist['hits']['hits']:
+				r = requests.post("http://localhost:9200/traffic.apps/_update/"+s['_id'], json=payload)
+				print "UPDATED DOC ID " + s['_id'] + ": Result = " + r.json()['result'] 
+				docCount += 1
 
         print "GET APP LIST: " + str(arsplist)
 
 	# Need to change this from 200 OK to looking at JSON response code instead
 	if r.status_code == 200:
-		return "Successfully updated document with Acknowledge = " + value + " with Action Log = " + action
+		return "Successfully updated " + str(docCount) + "documents with Acknowledge = " + value + " and Action Log = " + action
 	else:
 		return "unsuccessful, please try again" + " Result: " + r.text
 
