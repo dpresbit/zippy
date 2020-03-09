@@ -12,6 +12,17 @@ The ELK docker "stack" consists of 3 images with the following image tags:
 - Logstash "L"
 - Kibana "K"
 
+Dependencies:
+- OPTIONAL
+	- pip (for istalling python packages)
+- REQUIRED
+	- flask
+	- restful
+	- flask_restful
+	- netaddr
+	- netaddr
+	- elementtree
+
 To deploy this stack (tested on Ubuntu 18.04.2 and Windows10 with 2/26 Docker)
 Create a directory and place the included docker-compose.yml file  and all yml and conf files inside of it.  CD to the directory and issue the following command:
 
