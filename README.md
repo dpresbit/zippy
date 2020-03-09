@@ -45,8 +45,8 @@ Connect to the Kibana portal: (replace localhost with docker server IP if not on
 Attach to the shell of a container to get to the command line (you can replace bach with your favorite shell)
 
 `docker-compose exec -u 0 elasticsearch bash 
-docker-compose exec -u 0 logstash bash
-docker-compose exec -u 0 kibana bash`
+`docker-compose exec -u 0 logstash bash`
+`docker-compose exec -u 0 kibana bash`
 ** Detach from container using "exit" command
 
 To stop the cluster (all containers), type
