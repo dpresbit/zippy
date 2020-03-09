@@ -13,7 +13,7 @@ The ELK docker "stack" consists of 3 images with the following image tags:
 - Kibana "K"
 
 DEPENDENCIES:
-	- pip (for istalling python packages, install using yum or apt)
+	- pip for istalling python packages
 	- flask
 	- restful
 	- flask_restful
