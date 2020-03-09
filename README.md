@@ -13,14 +13,17 @@ The ELK docker "stack" consists of 3 images with the following image tags:
 - Kibana "K"
 
 DEPENDENCIES:
-- pip for istalling python packages
-- flask
-- restful
-- flask_restful
-- netaddr
-- netaddr
-- elementtree
-***Dependencies Note:  To install packages offline, download wheel files from pypi.org, then use: pip install virtualenv-15.1.0-py2.py3-none-any.whl --user
+- PIP Installer
+	- pip for istalling python packages
+- PIP Packages
+	- flask
+	- restful
+	- flask_restful
+	- netaddr
+	- netaddr
+	- elementtree
+
+Dependencies Note:  To install packages offline, download wheel files from pypi.org, then use: pip install virtualenv-15.1.0-py2.py3-none-any.whl --user
 
 To deploy this stack (tested on Ubuntu 18.04.2 and Windows10 with 2/26 Docker)
 Create a directory and place the included docker-compose.yml file  and all yml and conf files inside of it.  CD to the directory and issue the following command:
