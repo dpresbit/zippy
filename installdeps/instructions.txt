@@ -1,3 +1,17 @@
-Step 1:  mkdir zippydeps && cd zippydeps && tar xzvf zippydeps.tar
-Step 2:  dpkg -i *.deb
-Step 3:  pip install Flask-1.1.1-py2.py3-none-any.whl Flask_RESTful-0.3.8-py2.py3-none-any.whl netaddr-0.7.19-py2.py3-none-any.whl
+Step 1:  mkdir deps
+Step 2:  tar -C deps -xzvf deps.tar
+Step 3:  cd deps
+Step 4:  dpkg -i *.deb
+Step 6:  pip install (in the following order)
+Werkzeug-1.0.0-py2.py3-none-any.whl
+pytz-2019.3-py2.py3-none-any.whl
+Babel-2.8.0-py2.py3-none-any.whl
+MarkupSafe-1.1.1-cp27-cp27mu-manylinux1_x86_64.whl
+Jinja2-2.11.1-py2.py3-none-any.whl
+click-7.1.1-py2.py3-none-any.whl
+itsdangerous-1.1.0-py2.py3-none-any.whl
+Flask-1.1.1-py2.py3-none-any.whl
+six-1.14.0-py2.py3-none-any.whl
+aniso8601-8.0.0-py2.py3-none-any
+Flask_RESTful-0.3.8-py2.py3-none-any.whl
+netaddr-0.7.19-py2.py3-none-any.whl
