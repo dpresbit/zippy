@@ -20,6 +20,7 @@ Flask_RESTful-0.3.8-py2.py3-none-any.whl
 
 netaddr-0.7.19-py2.py3-none-any.whl
 
+OPTIONAL: Step 6:  Repeat the untar/zip for docker if installing docker deps
 
 NOTES:  Used following command to obtain all deps for Ubuntu 18.04LTS
 apt install apt-rdepends
