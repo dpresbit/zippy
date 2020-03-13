@@ -13,6 +13,9 @@ The ELK docker "stack" consists of 3 images with the following image tags:
 - Kibana "K"
 
 DEPENDENCIES:
+
+** UBUNTU Deps listed below, and instructions, can be found in the installdeps directory
+
 - PIP Installer
 	- pip for istalling python packages
 - PIP Packages
@@ -25,7 +28,10 @@ Dependencies Note:  To install packages while offline, download the wheel files 
 `pip install <wheel file name> --user`
 
 To deploy this stack (tested on Ubuntu 18.04.2 and Windows10 with 2/26 Docker)
-Create a directory and place the included docker-compose.yml file  and all yml and conf files inside of it.  CD to the directory and issue the following command:
+
+Create a directory and place the included docker-compose.yml file and all yml and conf files inside of it.  Change the IP address within logstash.conf to your server IP, and change firewall/panorama IP and APIKEY within ztn/app.py to reflect your environment.
+
+CD to the zippy master directory and chmod 666 esdata directory, then issue the following command:
 
 `docker-compose up -d`
 
