@@ -10,6 +10,10 @@ services:
       - cluster.name=docker-cluster
       - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
     volumes:
       - ./elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
       - ./esdata:/usr/share/elasticsearch/data
@@ -17,8 +21,6 @@ services:
     ports:
       - "9200:9200"
       - "9300:9300"
-    #environment:
-      #ES_JAVA_OPTS: "-Xmx256m -Xms256m"
     networks:
       - elk
 #    command: bash /usr/share/elasticsearch/mappings/create_ecs_pan_mapping
