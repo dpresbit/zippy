@@ -112,64 +112,64 @@ Note on genlog.  NetCAT is used in the script and for some reason it sends two b
 #PANOS COMMANDS TO FORWARD SYSLOGS TO ELK
 REPLACE 192.168.54.30 with the IP of your host running docker
 
-set shared log-settings syslog elkstacktraffic server trafficpipe transport UDP 
-set shared log-settings syslog elkstacktraffic server trafficpipe port 5550 
-set shared log-settings syslog elkstacktraffic server trafficpipe format BSD 
-set shared log-settings syslog elkstacktraffic server trafficpipe server 192.168.54.30 
-set shared log-settings syslog elkstacktraffic server trafficpipe facility LOG_USER
-set shared log-settings syslog elkstackthreat server threatpipe transport UDP
-set shared log-settings syslog elkstackthreat server threatpipe port 5551
-set shared log-settings syslog elkstackthreat server threatpipe format BSD
-set shared log-settings syslog elkstackthreat server threatpipe server 192.168.54.30
-set shared log-settings syslog elkstackthreat server threatpipe facility LOG_USER
-set shared log-settings syslog elstackurl server urlpipe transport UDP
-set shared log-settings syslog elstackurl server urlpipe port 5552
-set shared log-settings syslog elstackurl server urlpipe format BSD
-set shared log-settings syslog elstackurl server urlpipe server 192.168.54.30
-set shared log-settings syslog elstackurl server urlpipe facility LOG_USER
-set shared log-settings syslog elkstackwf server wfpipe transport UDP
-set shared log-settings syslog elkstackwf server wfpipe port 5553
-set shared log-settings syslog elkstackwf server wfpipe format BSD
-set shared log-settings syslog elkstackwf server wfpipe server 192.168.54.30
-set shared log-settings syslog elkstackwf server wfpipe facility LOG_USER
-set shared log-settings syslog elkstackdataf server datafpipe transport UDP
-set shared log-settings syslog elkstackdataf server datafpipe port 5554
-set shared log-settings syslog elkstackdataf server datafpipe format BSD
-set shared log-settings syslog elkstackdataf server datafpipe server 192.168.54.30
-set shared log-settings syslog elkstackdataf server datafpipe facility LOG_USER
-set shared log-settings syslog elkstackuserid server useridpipe transport UDP
-set shared log-settings syslog elkstackuserid server useridpipe port 5555
-set shared log-settings syslog elkstackuserid server useridpipe format BSD
-set shared log-settings syslog elkstackuserid server useridpipe server 192.168.54.30
-set shared log-settings syslog elkstackuserid server useridpipe facility LOG_USER
-set shared log-settings syslog elkstacktunnel server tunnelpipe transport UDP
-set shared log-settings syslog elkstacktunnel server tunnelpipe port 5556
-set shared log-settings syslog elkstacktunnel server tunnelpipe format BSD
-set shared log-settings syslog elkstacktunnel server tunnelpipe server 192.168.54.30
-set shared log-settings syslog elkstacktunnel server tunnelpipe facility LOG_USER
-set shared log-settings syslog elkstacksystem server systempipe transport UDP
-set shared log-settings syslog elkstacksystem server systempipe port 5558
-set shared log-settings syslog elkstacksystem server systempipe format BSD
-set shared log-settings syslog elkstacksystem server systempipe server 192.168.54.30
-set shared log-settings syslog elkstacksystem server systempipe facility LOG_USER
-set shared log-settings syslog elkstachconifg server configpipe transport UDP
-set shared log-settings syslog elkstachconifg server configpipe port 5559
-set shared log-settings syslog elkstachconifg server configpipe format BSD
-set shared log-settings syslog elkstachconifg server configpipe server 192.168.54.30
-set shared log-settings syslog elkstachconifg server configpipe facility LOG_USER
-set shared log-settings syslog elkstackHIP server HIPpipe transport UDP
-set shared log-settings syslog elkstackHIP server HIPpipe port 5557
-set shared log-settings syslog elkstackHIP server HIPpipe format BSD
-set shared log-settings syslog elkstackHIP server HIPpipe server 192.168.54.30
-set shared log-settings syslog elkstackHIP server HIPpipe facility LOG_USER
-set shared log-settings userid match-list userid send-syslog elkstackuserid
-set shared log-settings userid match-list userid filter "All Logs"
-set shared log-settings system match-list system send-syslog elkstacksystem
-set shared log-settings system match-list system filter "All Logs"
-set shared log-settings config match-list conf send-syslog elkstachconifg
-set shared log-settings config match-list conf filter "All Logs"
-set shared log-settings hipmatch match-list HIPsyslog send-syslog elkstackHIP
-set shared log-settings hipmatch match-list HIPsyslog filter "All Logs"
+set shared log-settings syslog elkstacktraffic server trafficpipe transport UDP  
+set shared log-settings syslog elkstacktraffic server trafficpipe port 5550  
+set shared log-settings syslog elkstacktraffic server trafficpipe format BSD  
+set shared log-settings syslog elkstacktraffic server trafficpipe server 192.168.54.30  
+set shared log-settings syslog elkstacktraffic server trafficpipe facility LOG_USER  
+set shared log-settings syslog elkstackthreat server threatpipe transport UDP  
+set shared log-settings syslog elkstackthreat server threatpipe port 5551  
+set shared log-settings syslog elkstackthreat server threatpipe format BSD  
+set shared log-settings syslog elkstackthreat server threatpipe server 192.168.54.30  
+set shared log-settings syslog elkstackthreat server threatpipe facility LOG_USER  
+set shared log-settings syslog elstackurl server urlpipe transport UDP  
+set shared log-settings syslog elstackurl server urlpipe port 5552  
+set shared log-settings syslog elstackurl server urlpipe format BSD  
+set shared log-settings syslog elstackurl server urlpipe server 192.168.54.30  
+set shared log-settings syslog elstackurl server urlpipe facility LOG_USER  
+set shared log-settings syslog elkstackwf server wfpipe transport UDP  
+set shared log-settings syslog elkstackwf server wfpipe port 5553  
+set shared log-settings syslog elkstackwf server wfpipe format BSD  
+set shared log-settings syslog elkstackwf server wfpipe server 192.168.54.30  
+set shared log-settings syslog elkstackwf server wfpipe facility LOG_USER  
+set shared log-settings syslog elkstackdataf server datafpipe transport UDP  
+set shared log-settings syslog elkstackdataf server datafpipe port 5554  
+set shared log-settings syslog elkstackdataf server datafpipe format BSD  
+set shared log-settings syslog elkstackdataf server datafpipe server 192.168.54.30  
+set shared log-settings syslog elkstackdataf server datafpipe facility LOG_USER  
+set shared log-settings syslog elkstackuserid server useridpipe transport UDP  
+set shared log-settings syslog elkstackuserid server useridpipe port 5555  
+set shared log-settings syslog elkstackuserid server useridpipe format BSD  
+set shared log-settings syslog elkstackuserid server useridpipe server 192.168.54.30  
+set shared log-settings syslog elkstackuserid server useridpipe facility LOG_USER  
+set shared log-settings syslog elkstacktunnel server tunnelpipe transport UDP  
+set shared log-settings syslog elkstacktunnel server tunnelpipe port 5556  
+set shared log-settings syslog elkstacktunnel server tunnelpipe format BSD  
+set shared log-settings syslog elkstacktunnel server tunnelpipe server 192.168.54.30  
+set shared log-settings syslog elkstacktunnel server tunnelpipe facility LOG_USER  
+set shared log-settings syslog elkstacksystem server systempipe transport UDP  
+set shared log-settings syslog elkstacksystem server systempipe port 5558  
+set shared log-settings syslog elkstacksystem server systempipe format BSD  
+set shared log-settings syslog elkstacksystem server systempipe server 192.168.54.30  
+set shared log-settings syslog elkstacksystem server systempipe facility LOG_USER  
+set shared log-settings syslog elkstackconfig server configpipe transport UDP  
+set shared log-settings syslog elkstackconfig server configpipe port 5559  
+set shared log-settings syslog elkstackconfig server configpipe format BSD  
+set shared log-settings syslog elkstackconfig server configpipe server 192.168.54.30  
+set shared log-settings syslog elkstackconfig server configpipe facility LOG_USER  
+set shared log-settings syslog elkstackHIP server HIPpipe transport UDP  
+set shared log-settings syslog elkstackHIP server HIPpipe port 5557  
+set shared log-settings syslog elkstackHIP server HIPpipe format BSD  
+set shared log-settings syslog elkstackHIP server HIPpipe server 192.168.54.30  
+set shared log-settings syslog elkstackHIP server HIPpipe facility LOG_USER  
+set shared log-settings userid match-list userid send-syslog elkstackuserid  
+set shared log-settings userid match-list userid filter "All Logs"  
+set shared log-settings system match-list system send-syslog elkstacksystem  
+set shared log-settings system match-list system filter "All Logs"  
+set shared log-settings config match-list conf send-syslog elkstackconfig  
+set shared log-settings config match-list conf filter "All Logs"  
+set shared log-settings hipmatch match-list HIPsyslog send-syslog elkstackHIP  
+set shared log-settings hipmatch match-list HIPsyslog filter "All Logs"  
 
 #NOTE: you must setup a logging profile Objects>log profile and set your polices to log, also set your zones to log 
 set rulebase security rules "Allow All Log to ELK" log-setting "Send to ELK"
