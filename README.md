@@ -22,6 +22,7 @@ DEPENDENCIES:
 	- flask (https://pypi.org/project/Flask/#files)
 	- flask_restful (https://pypi.org/project/Flask-RESTful/#files)
 	- netaddr (https://pypi.org/project/netaddr/#files)
+	- requests (https://pypi.org/project/requests/)
 
 Dependencies Note:  To install packages while offline, download the wheel files from each link above, then use:
 
