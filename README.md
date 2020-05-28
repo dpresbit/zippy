@@ -14,7 +14,7 @@ The ELK docker "stack" consists of 3 images with the following image tags:
 
 DEPENDENCIES:
 
-** UBUNTU Deps listed below, and instructions, can be found in the installdeps directory
+** Linux Deps listed below, and instructions, can be found in the installdeps directory
 
 - PIP Installer
 	- pip for istalling python packages
@@ -30,6 +30,13 @@ Dependencies Note:  To install packages while offline, download the wheel files 
 To deploy this stack (tested on Ubuntu 18.04.2 and Windows10 with 2/26 Docker)
 
 Create a directory and place the included docker-compose.yml file and all yml and conf files inside of it.  Change the IP address within logstash.conf to your server IP, and change firewall/panorama IP and APIKEY within ztn/app.py to reflect your environment.
+
+You will also need to install `docker-compose` as a pre-requisite.  See: https://docs.docker.com/compose/install/
+
+Also, make sure your virtual memory is set per Elastisearch best practices:
+`sysctl -w vm.max_map_count=262144`
+to make this persistent, do the following command then it will persist across reboots:
+`sudo echo vm.max_map_count=262144 >> /etc/sysctl.conf`
 
 CD to the zippy master directory and chmod 666 esdata directory, then issue the following command:
 
