@@ -171,5 +171,5 @@ set shared log-settings config match-list conf filter "All Logs"
 set shared log-settings hipmatch match-list HIPsyslog send-syslog elkstackHIP  
 set shared log-settings hipmatch match-list HIPsyslog filter "All Logs"  
 
-#NOTE: you must setup a logging profile Objects>log profile and set your polices to log, also set your zones to log 
+### NOTE: you must setup a logging profile Objects>log profile and set your polices to log, also set your zones to log 
 set rulebase security rules "Allow All Log to ELK" log-setting "Send to ELK"
