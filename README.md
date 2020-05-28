@@ -113,7 +113,9 @@ Note on genlog.  NetCAT is used in the script and for some reason it sends two b
 REPLACE 192.168.54.30 with the IP of your host running docker
 
 set shared log-settings syslog elkstacktraffic server trafficpipe transport UDP
+
 set shared log-settings syslog elkstacktraffic server trafficpipe port 5550
+
 set shared log-settings syslog elkstacktraffic server trafficpipe format BSD
 set shared log-settings syslog elkstacktraffic server trafficpipe server 192.168.54.30
 set shared log-settings syslog elkstacktraffic server trafficpipe facility LOG_USER
