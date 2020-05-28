@@ -35,8 +35,10 @@ You will also need to install `docker-compose` as a pre-requisite.  See: https:/
 
 Also, make sure your virtual memory is set per Elastisearch best practices:
 `sysctl -w vm.max_map_count=262144`
-to make this persistent, do the following command then it will persist across reboots:
+Note: To make this setting persistent, do the following command then it will persist across reboots:
 `sudo echo vm.max_map_count=262144 >> /etc/sysctl.conf`
+
+### Starting and Operating Zippy
 
 CD to the zippy master directory and chmod 666 esdata directory, then issue the following command:
 
@@ -55,7 +57,7 @@ Connect to the Kibana portal: (replace localhost with docker server IP if not on
 
 `http://localhost:5601`
 
-Attach to the shell of a container to get to the command line (you can replace bach with your favorite shell)
+Attach to the shell of a container to get to the command line (you can replace batch with your favorite shell)
 
 `docker-compose exec -u 0 elasticsearch bash`
 `docker-compose exec -u 0 logstash bash`
@@ -73,6 +75,11 @@ To stop the cluster (all containers), type
 Data volumes will persist, so it’s possible to start the cluster again with the same data using docker-compose up`. To destroy the cluster and the data volumes, just type 
 
 `docker-compose down -v`
+
+### NOTE:
+Once you have the ELK stack running (all three containers), go into the 'mappings' directory and do the following:
+'./create_ecs_pan_mapping_ES7v2'
+This command will publish data type mappings into elastic so that, say, your IP address fields show up as IPs...etc.
 
 TROUBLESHOOTING:
 
@@ -105,7 +112,7 @@ Note on genlog.  NetCAT is used in the script and for some reason it sends two b
 #PANOS COMMANDS TO FORWARD SYSLOGS TO ELK
 REPLACE 192.168.54.30 with the IP of your host running docker
 
-`set shared log-settings syslog elkstacktraffic server trafficpipe transport UDP
+set shared log-settings syslog elkstacktraffic server trafficpipe transport UDP
 set shared log-settings syslog elkstacktraffic server trafficpipe port 5550
 set shared log-settings syslog elkstacktraffic server trafficpipe format BSD
 set shared log-settings syslog elkstacktraffic server trafficpipe server 192.168.54.30
@@ -162,7 +169,7 @@ set shared log-settings system match-list system filter "All Logs"
 set shared log-settings config match-list conf send-syslog elkstachconifg
 set shared log-settings config match-list conf filter "All Logs"
 set shared log-settings hipmatch match-list HIPsyslog send-syslog elkstackHIP
-set shared log-settings hipmatch match-list HIPsyslog filter "All Logs"`
+set shared log-settings hipmatch match-list HIPsyslog filter "All Logs"
 
 #NOTE: you must setup a logging profile Objects>log profile and set your polices to log, also set your zones to log 
-`set rulebase security rules "Allow All Log to ELK" log-setting "Send to ELK"`
+set rulebase security rules "Allow All Log to ELK" log-setting "Send to ELK"
