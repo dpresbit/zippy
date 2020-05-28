@@ -76,7 +76,7 @@ Data volumes will persist, so it’s possible to start the cluster again with th
 
 `docker-compose down -v`
 
-### NOTE:
+#### NOTE:
 Once you have the ELK stack running (all three containers), go into the 'mappings' directory and do the following:
 './create_ecs_pan_mapping_ES7v2'
 This command will publish data type mappings into elastic so that, say, your IP address fields show up as IPs...etc.
@@ -108,6 +108,10 @@ Traffic Generator - For linux only
 `genlog <traffic|threat|dataf|.....all>`
 
 Note on genlog.  NetCAT is used in the script and for some reason it sends two blank streams of data to logstash that result in dissect errors when viewing in kibana.  So for everyone legit log that comes in you'll see two failures.  This is only a result of using this script and the dissect failure entries in kibana can be disregarded.
+
+
+## SECURITY
+To implement credentialed login access, and SSL, follow the XPACK-SECURITY documentation beginning here:   https://www.elastic.co/guide/en/elasticsearch/reference/current/get-started-built-in-users.html
 
 ## PANOS COMMANDS TO FORWARD SYSLOGS TO ELK STACK  
 NOTE: Replace '192.168.54.30' with the IP of your host running docker
