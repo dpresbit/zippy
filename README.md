@@ -109,7 +109,7 @@ Traffic Generator - For linux only
 
 Note on genlog.  NetCAT is used in the script and for some reason it sends two blank streams of data to logstash that result in dissect errors when viewing in kibana.  So for everyone legit log that comes in you'll see two failures.  This is only a result of using this script and the dissect failure entries in kibana can be disregarded.
 
-#PANOS COMMANDS TO FORWARD SYSLOGS TO ELK
+##PANOS COMMANDS TO FORWARD SYSLOGS TO ELK STACK  
 REPLACE 192.168.54.30 with the IP of your host running docker
 
 set shared log-settings syslog elkstacktraffic server trafficpipe transport UDP  
