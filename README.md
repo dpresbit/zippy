@@ -102,7 +102,7 @@ Connection to localhost 5550 port [udp/*] succeeded!
 If you don't see an output from the nc command it did not connect to the port on logstash - check that your container is up and running
 TCPdump from docker host machine to check for incoming syslog from NGFW
 
-`tcpdump -v -i any -n port 5550`
+`tcpdump -v -i any -n port 5550`  
 `tcpdump -v -i any -n port 5551`
 
 to see payload of packet and save to log
