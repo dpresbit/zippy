@@ -83,7 +83,7 @@ sudo iptables -A INPUT -p tcp --dport 5601 -j ACCEPT
 
 ### NOTE:
 Once you have the ELK stack running (all three containers), go into the 'mappings' directory and do the following:
-'./create_ecs_pan_mapping_ES7v2'
+`./create_ecs_pan_mapping_ES7v2`
 This command will publish data type mappings into elastic so that, say, your IP address fields show up as IPs...etc.
 
 TROUBLESHOOTING:
