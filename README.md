@@ -77,6 +77,10 @@ Data volumes will persist, so it’s possible to start the cluster again with th
 
 `docker-compose down -v`
 
+Check your Kibana interface by going to http://<serverIP>:5601.  Make sure you have your incoming iptables/ufw entry in place so you can access the web interface!
+
+sudo iptables -A INPUT -p tcp --dport 5601 -j ACCEPT
+
 ### NOTE:
 Once you have the ELK stack running (all three containers), go into the 'mappings' directory and do the following:
 './create_ecs_pan_mapping_ES7v2'
