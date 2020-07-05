@@ -1,0 +1,117 @@
+version: '3'
+
+services:
+# Container for ELK downloaded from https://www.docker.elastic.co/# 
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.4.2
+    container_name: elasticsearch
+    environment:
+      - cluster.name=docker-cluster
+      - bootstrap.memory_lock=true
+#	Change Xms to 1g, 1024m, etc. for more resources
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - ./elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
+#	Make sure esdata directory is set to 777 or elasticsearch user is owner
+      - ./esdata:/usr/share/elasticsearch/data
+    ports:
+#	API port
+      - "9200:9200"
+#	Inter-Node port
+      - "9300:9300"
+    networks:
+      - elk
+    restart: always
+
+# Make sure you use command: bash /usr/share/elasticsearch/mappings/create_ecs_pan_mapping
+# after elastic starts for first time, so field type mappings can be generated
+# (requires CURL to send the type mapping commands to elastic)
+
+  logstash:
+    image: docker.elastic.co/logstash/logstash:7.4.2
+    container_name: logstash
+    volumes:
+      - ./logstash.yml:/usr/share/logstash/config/logstash.yml:ro
+      - ./logstash.conf:/usr/share/logstash/pipeline/logstash.conf:ro
+#	Dictionary files for logstash traffic log enrichment
+      - ./zippy/ip-subnet-tags.yaml:/tmp/ip-subnet-tags.yaml
+      - ./zippy/applipedia.yaml:/tmp/applipedia.yaml
+    ports:
+#	Port 5550 is for traffic logs from NGFW and the minimum requirement for zippy to function
+      - "5550:5550/udp"  
+#	Ports 5551 is for threats 5552 url, 5553 for wf, 5554 for dataf, 5555 for userid, 5556 for tunnel, 5557 HIP, 5558 panos-system, 5559 panos-config
+#      - "5551:5551/udp"
+#      - "5552:5552/udp"
+#      - "5553:5553/udp"
+#      - "5554:5554/udp"
+#      - "5555:5555/udp"
+#      - "5556:5556/udp"
+#      - "5557:5557/udp"
+#      - "5558:5558/udp"
+#      - "5559:5559/udp"
+#	Port 9600 is for Elastic Beats, which is not used as part of zippy
+#      - "9600:9600"
+    environment:
+      - "LS_JAVA_OPTS=-Xmx1g -Xms1g"
+#	This host running the docker containers
+      - "hostIP=192.168.55.170"
+    networks:
+      - elk
+    depends_on:
+      - elasticsearch
+    restart: always
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.4.2
+    container_name: kibana
+    volumes:
+      - ./kibana.yml:/usr/share/kibana/config/kibana.yml:ro
+    ports:
+      - "5601:5601"
+    networks:
+      - elk
+    depends_on:
+      - elasticsearch
+    restart: always
+
+  zippy:
+    image: zippy:1.0
+    container_name: zippy
+    volumes:
+      - ./zippy/ip-subnet-tags.yaml:/usr/local/zippy/ip-subnet-tags.yaml
+      - ./zippy/cidrs.csv:/usr/local/zippy/cidrs.csv
+      - ./zippy/applipedia.yaml:/usr/local/zippy/applipedia.yaml
+    environment:
+      - PYTHONPATH=/opt/rh/rh-python36/root/usr/lib/python3.6/site-packages
+      - FLASK_ENV=development
+#	This host running the docker containers
+      - hostIP=192.168.55.170
+#	Panorama or Firewall IP Address and API Key
+      - panIP=10.70.219.54
+      - apikey=LUFRPT1UTm52RWNPWW1YbE5UbUhPMTFrcGh0ZHVmQ1E9Q2p2NWtHcnVkRjJwUGI0bW9rOGZUdU1Na0YzTUlkS1UvcTdTWC9HZ1drWnFGK1VUcGdlOEJIL0dtRE5HVHBLbQ==
+#	Firewall or Panorama?
+      - isFirewall=False
+#	If Firewall, make sure vsys ID is correct (default = vsys1)
+      - vSys=vsys1
+#	If Panorama, leave deviceGroup <blank> to auto-discover/apply policies to firewall's device group
+#	if you want to apply policies to all device groups, specificy 'Shared'
+      - deviceGroup=
+    ports:
+      - "9999:9999"
+    networks:
+      - elk
+    depends_on:
+      - elasticsearch
+      - kibana
+    restart: always
+
+networks:
+  elk:
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.172.0.0/16

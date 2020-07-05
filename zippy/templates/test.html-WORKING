@@ -1,0 +1,331 @@
+<title>zippy</title>
+<link rel="stylesheet" media="screen" href="static/css/bootstrap.min.css">
+<link rel="stylesheet" href="static/css/font-awesome.min.css">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="static/js/jquery.min.js"></script>
+<script src="static/js/popper.min.js"></script>
+<script src="static/js/bootstrap.min.js"></script>
+<script>
+$(document).ready(function(){
+  $('[data-toggle="tooltip"]').tooltip({html: true}); 
+});
+</script>
+<body>
+
+
+<div class="container">	
+
+<img src="static/logo_large_zipper.png" style="max-width: 50%;height: auto" alt="Responsive image">
+
+<div class="accordion" id="accordionExample">
+  <div class="card">
+    <div class="card-header" id="headingOne">
+      <h5 class="mb-0">
+        <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+          &#9776; &nbsp; Application Session Details
+        </button>
+      </h5>
+    </div>
+    <div id="collapseOne" class="collapse show" aria-labelledby="headingOne"> <!-- data-parent="#accordionExample">-->
+      <div class="card-body">
+
+<div class="container">
+<p><img src="static/fingerprint.png" width="24pt" height="24pt"></img> Service Fingerprint: {{fp_service}}</p>
+<p><img src="static/fingerprint.png" width="24pt" height="24pt"></img> App Session Fingerprint: {{docid}}</p>
+
+<table class="table table-sm">
+    <thead class="thead-light">
+      <tr>
+	<th></th>
+        <th>From Zone</th>
+        <th>Source IP</th>
+        <th>User</th>
+	<th>To Zone</th>
+	<th>Destination IP</th>
+	<th>Destination Port</th>
+        <th>Application</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+	<td>
+    <span class="input-group-text">From Log</span>
+	</td>
+        <td>{{srczone}}</td>
+        <td>{{srcip}}</td>
+	<td>{{srcuser}}</td>
+        <td>{{dstzone}}</td>
+	<td>{{dstip}}</td>
+	<td>{{dstport}}</td>
+	<td>
+<span class="btn btn-sm 
+{% if appdefault == "True" %}btn-success{% else %}btn-danger{% endif %}
+"
+{% if appdeps != "" %}
+{% set dlist = appdeps.split(',') %}
+ data-toggle="tooltip" data-placement="right" title="<span class='badge badge-light'>Dependencies</span>
+{% for d in dlist %}
+<br />
+{{d}}
+{% endfor %}
+{% endif %}
+">{{application}} <span class="badge badge-light badge-pill">{{apprisk}}</span>
+</span>
+	</td>
+      </tr>
+    </tbody>
+    <tbody style="background-color:white">
+      <tr>
+	<td>
+    <span class="input-group-text">Desired</span>
+	</td>
+        <td>{{desired_srczone}}</td>
+        <td>
+	<span class="btn btn-sm btn-secondary">{{srcnet}} <span class="badge badge-light badge-pill">TAG1</span></span>
+	</td>
+	<td>
+	</td>
+        <td>{{desired_dstzone}}</td>
+	<td>
+	<span class="btn btn-sm btn-secondary">{{dstnet}} <span class="badge badge-light badge-pill">TAG1</span></span>
+	</td>
+	<td>
+
+{% if appdefault == "False" %}
+	<span class="btn btn-sm btn-danger">Warning</span>
+{% endif %}
+
+{% if appdefault == "True" %}
+	<span class="btn btn-sm btn-success">App-Default</span>
+{% endif %}
+
+	</td>
+
+<!--
+TODO: Need to gather applist apps 'isdefault' field to paint green or red
+	and need to look up app risk levels for them, including
+	for those dependencies identified (placeholder of 1 for now)
+-->
+
+	<td>
+
+<!-- List all dependencies for the application listed -->
+{% if appdeps != "" %}
+<div class="border border-secondary rounded">
+<button class="btn btn-sm btn-secondary" type="button" data-toggle="collapse" data-target="#collapseDeps" aria-expanded="false" aria-controls="collapseDeps" style="width:100%">&#9776; &nbsp; App Dependencies</button>
+{% set dlist = appdeps.split(',') %}
+{% for d in dlist %}
+	<div class="p-1 collapse" id="collapseDeps">
+	<span class="btn btn-sm btn-secondary">
+	{{d}} <span class="badge badge-light badge-pill">4</span>
+	</span>
+	</div>
+{% endfor %}
+</div>
+{% endif %}
+
+<!-- List any other apps seen in traffic logs related to APPLICATION SHIFTS -->
+{% if applist != "" %}
+<div class="mt-2 border border-primary rounded">
+<button class="btn btn-sm btn-primary" type="button" data-toggle="collapse" data-target="#collapseApps" aria-expanded="false" aria-controls="collapseApps" style="width:100%">&#9776; &nbsp; Related Apps (Logs)</button>
+{% set alist = applist.split(',') %}
+{% for a in alist %}
+	<div class="p-1 collapse" id="collapseApps">
+	<span class="btn btn-sm btn-success">
+	{{a}} <span class="badge badge-light badge-pill">4</span>
+	</span>
+	</div>	
+{% endfor %}
+{% else %}
+	<div class="p-1 collapse" id="collapseApps">
+	<span class="btn btn-sm {%if appdefault == "False"%}btn-danger{%else%}btn-success{%endif%}">
+	{{application}} <span class="badge badge-light badge-pill">4</span>
+	</span>
+	</div>
+{% endif %}
+</div>
+	</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header" id="headingThree">
+      <h5 class="mb-0">
+        <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+          &#9776; &nbsp; Create Policy
+        </button>
+      </h5>
+    </div>
+    <div id="collapseThree" class="collapse" aria-labelledby="headingThree"> <!-- data-parent="#accordionExample">-->
+      <div class="card-body">
+        <form class="form-horizontal border border-secondary rounded" action="/addpolicy" method="get" role="form">
+<p></p>
+
+<input type="hidden" name="docid" value="{{docid}}"/>
+<input type="hidden" name="application" value="{{application}}"/>
+<input type="hidden" name="fp_service" value="{{fp_service}}"/>
+{% if ((appdeps != "") and (applist != "")) %}
+{% set allapps = appdeps + "," + applist %}
+{% set allapps = allapps.split(',')|unique|join(',') %}
+<input type="hidden" name="allapps" value="{{allapps}}"/>
+{% endif %}
+
+<div class="col-sm-8 form-group">
+  <label class="control-label">Policy Name</label>
+{% set defname = "Allow " + application %}
+{% if (srcuser != "") %}
+{% set defname = defname + " " + (srcuser|replace('\\', '-')) %}
+{% endif %}
+{% if (desired_srczone != "") %}
+{% set defname = defname + " from " + desired_srczone %}
+{% else %}
+{% set defname = defname + " from " + srczone %}
+{% endif %}
+{% if (desired_dstzone != "") %}
+{% set defname = defname + " to " + desired_dstzone %}
+{% else %}
+{% set defname = defname + " to " + dstzone %}
+{% endif %}
+  <input class="form-control" maxlength="63" id="policyname" name="policyname" type="text" 
+placeholder="{{defname|truncate(63,True,"...",0)}}" required="" value="{{defname|truncate(63,True,"...",0)}}">
+</div>
+
+<div class="col-sm-8 form-group">
+  <label class="control-label">Policy Description</label>
+  <input id="description" name="description" type="text" placeholder="Note: App and Service Fingerprints will be appended automatically" class="form-control">
+</div>
+
+<div class="col-sm-8 form-group">
+  <label>From Zone</label>
+    <select id="from" name="from" class="form-control">
+{% if desired_srczone != "" %}
+      <option value="{{desired_srczone}}">{{desired_srczone}} (Desired)</option>
+{% endif %}
+      <option value="{{srczone}}">{{srczone}} (From Traffic Log)</option>
+    </select>
+</div>
+
+<div class="col-sm-8 form-group">
+  <label>To Zone</label>
+    <select id="to" name="to" class="form-control">
+{% if desired_dstzone != "" %}
+      <option value="{{desired_dstzone}}">{{desired_dstzone}} (Desired)</option>
+{% endif %}
+      <option value="{{dstzone}}">{{dstzone}} (From Traffic Log)</option>
+    </select>
+</div>
+
+{% if srcuser != "" %}
+<div class="col-sm-8 form-group">
+  <label>Source Domain\User</label>
+    <select id="source-user" name="source-user" class="form-control">
+      <option value="{{srcuser}}">{{srcuser}}</option>
+      <option value=""></option>
+    </select>
+</div>
+{% endif %}
+
+<div class="col-sm-8 form-group">
+  <label>Source IP/Network</label>
+    <select id="source" name="source" class="form-control">
+      <option value="{{srcip}}">{{srcip}} (From Traffic Log)</option>
+{% if srcnet %}
+      <option value="{{srcnet}}">{{srcnet}} {% if srcnet == "0.0.0.0/0" %}(Desired: Any){% else %}(Desired: Subnet){% endif %}</option>
+{% endif %}
+    </select>
+</div>
+
+<div class="col-sm-8 form-group">
+  <label>Destination IP/Network</label>
+    <select id="destination" name="destination" class="form-control">
+      <option value="{{dstip}}">{{dstip}} (From Traffic Log)</option>
+{% if dstnet %}
+      <option value="{{dstnet}}">{{dstnet}} {% if dstnet == "0.0.0.0/0" %}(Desired: Any){% else %}(Desired: Subnet){% endif %}</option>
+{% endif %}
+    </select>
+</div>
+
+<div class="col-sm-8 form-group">
+  <label>Ports for {{application}} (Note: Session is {% if appdefault == "False" %} NOT {% endif %} using a default <a href=/static/applipedia.yaml target="_blank">Applipedia</a><small>&copy;</small> port)</label>
+    <select id="service" name="service" class="form-control">
+
+{% if applist != "" %}
+      <option value="{{applist}}">{{applist}} (From Traffic Log - Related Apps)</option>
+{% endif %}
+{% if appdefault == "True" %}
+      <option value="application-default">Application Default ({{ application  }})</option>
+      <option value="{{service}}">{{service}} (From Traffic Log)</option>
+{% else %}
+      <option value="{{service}}">{{service}} (From Traffic Log)</option>
+      <option value="application-default">Application Default</option>
+{% endif %}
+
+    </select>
+
+{% if appdeps != "" %}
+
+{% set ad = appdeps + "," + application %}
+{% set ad = ad.split(',')|unique|join(',') %}
+
+  <div class="custom-control custom-switch m-2">
+    <input type="checkbox" class="custom-control-input" id="incldeps" name="incldeps" value="{{ad}}" checked>
+    <label class="custom-control-label" for="incldeps"
+
+{% set dlist = appdeps.split(',') %}
+ data-toggle="tooltip" data-placement="right" title="Dependencies
+{% for d in dlist %}
+<span class='m-1 badge badge-light w-100'>
+{{d}}
+</span>
+{% endfor %}
+">Include App Dependencies</label>
+  </div>
+{% endif %}
+
+</div>
+
+<div class="col-sm-8 form-group">
+  <label>Policy Action</label>
+    <select id="action" name="action" class="form-control">
+      <option value="allow">Allow</option>
+      <option value="deny">Deny</option>
+    </select>
+</div>
+
+<div class="col-sm-8 form-group">
+  <button type="submit" class="btn btn-success form-control">Submit</button>
+</div>
+
+</form>	
+	{% with messages = get_flashed_messages(with_categories=true) %}
+	{% if messages %}
+	{% for message in messages %}
+	{% if "Error" not in message[1]: %}
+
+	<div class="alert alert-info row top-buffer">
+	<strong>Success! </strong> {{message[1]}}
+	</div>
+	
+	{% endif %}
+	{% if "Error" in message[1]: %}
+	
+	<div class="alert alert-warning row top-buffer">
+	{{message[1]}}
+	</div>
+	
+	{% endif %}
+	{% endfor %}
+	{% endif %}
+	{% endwith %}
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+</body>

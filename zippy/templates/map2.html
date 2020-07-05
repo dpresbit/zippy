@@ -1,0 +1,125 @@
+<html>
+<head>
+    <script type="text/javascript" src="static/js/vis-network.min.js"></script>
+
+    <style type="text/css">
+        #mynetwork {
+            width: 1000px;
+            height: 600px;
+            border: 1px solid lightgray;
+        }
+    </style>
+</head>
+<body>
+<div id="mynetwork"></div>
+
+<!--
+
+assume we have input as follows:
+
+Event Timestamp, FW_IP, FW_NAME, SrcIP, DstIP, FP_hop, FP_peers, 
+
+## SESSION 1 ##
+2019-12-12 10:00:01.000, 1.1.1.1, FW-1, 10.10.10.10, 20.20.20.20, fw1-p1, p1
+2019-12-12 10:00:01.010, 2.1.1.1, FW-2, 10.10.10.10, 20.20.20.20, fw2-p1, p1
+2019-12-12 10:00:01.020, 3.1.1.1, FW-3, 10.10.10.10, 20.20.20.20, fw3-p1, p1
+2019-12-12 10:00:01.030, 4.1.1.1, FW-4, 10.10.10.10, 20.20.20.20, fw4-p1, p1
+2019-12-12 10:00:01.040, 8.1.1.1, FW-8, 10.10.10.10, 20.20.20.20, fw8-p1, p1
+
+## SESSION 2 ##
+2019-12-12 10:00:02.000, 1.1.1.1, FW-1, 10.10.10.10, 20.20.20.20, fw1-p2, p2
+2019-12-12 10:00:02.010, 2.1.1.1, FW-2, 10.10.10.10, 20.20.20.20, fw2-p2, p2
+2019-12-12 10:00:02.020, 3.1.1.1, FW-3, 10.10.10.10, 20.20.20.20, fw3-p2, p2
+2019-12-12 10:00:02.030, 5.1.1.1, FW-5, 10.10.10.10, 20.20.20.20, fw5-p2, p2
+2019-12-12 10:00:02.040, 8.1.1.1, FW-8, 10.10.10.10, 20.20.20.20, fw8-p2, p2
+
+## SESSION 3 ##
+2019-12-12 10:00:03.000, 1.1.1.1, FW-1, 10.10.10.10, 20.20.20.20, fw1-p3, p3
+2019-12-12 10:00:03.010, 2.1.1.1, FW-2, 10.10.10.10, 20.20.20.20, fw2-p3, p3
+2019-12-12 10:00:03.020, 6.1.1.1, FW-6, 10.10.10.10, 20.20.20.20, fw6-p3, p3
+2019-12-12 10:00:03.030, 8.1.1.1, FW-8, 10.10.10.10, 20.20.20.20, fw8-p3, p3
+
+## SESSION 4 ##
+2019-12-12 10:00:04.000, 1.1.1.1, FW-1, 10.10.10.10, 20.20.20.20, fw1-p4, p4
+2019-12-12 10:00:04.010, 2.1.1.1, FW-2, 10.10.10.10, 20.20.20.20, fw2-p4, p4
+2019-12-12 10:00:04.020, 7.1.1.1, FW-7, 10.10.10.10, 20.20.20.20, fw7-p4, p4
+2019-12-12 10:00:04.030, 8.1.1.1, FW-8, 10.10.10.10, 20.20.20.20, fw8-p4, p4
+
+-->
+
+<script type="text/javascript">
+    // create an array with nodes
+    var nodes = new vis.DataSet([
+        {id: 0001, color:'#cccccc', label: 'Src.Host-A'},
+        {id: 0002, color:'#cccccc', label: 'Src.Host-B'},
+        {id: 0003, color:'#cccccc', label: 'Src.Host-C'},
+        {id: 0004, color:'#cccccc', label: 'Src.Host-D'},
+        {id: 0005, color:'#cccccc', label: 'Src.Host-E'},
+        {id: 1001, shape:'box', label: 'H-1'},
+        {id: 1002, shape:'box', label: 'H-2'},
+        {id: 1003, shape:'box', label: 'H-3'},
+        {id: 1004, shape:'box', label: 'H-4'},
+        {id: 1005, shape:'box', label: 'H-5'},
+        {id: 1006, shape:'box', label: 'H-6'},
+        {id: 1007, shape:'box', label: 'H-7'},
+        {id: 1008, shape:'box', label: 'H-8'},
+        {id: 9001, color:'orange', label: 'Dst.Host-A'},
+        {id: 9002, color:'orange', label: 'Dst.Host-B'},
+        {id: 9003, color:'orange', label: 'Dst.Host-C'},
+        {id: 9004, color:'orange', label: 'Dst.Host-D'},
+        {id: 9005, color:'orange', label: 'Dst.Host-E'}
+    ]);
+
+    // create an array with edges
+    var edges = new vis.DataSet([
+	// Session 1
+        {from: 0001, to: 1001},
+        {from: 0002, to: 1001},
+        {from: 0003, to: 1001},
+        {from: 1001, to: 1002},
+        {from: 1002, to: 1003},
+        {from: 1003, to: 1004},
+        {from: 1004, to: 1008},
+        {from: 1008, to: 9001},
+        {from: 1004, to: 9002},
+        {from: 1007, to: 9003},
+        {from: 0004, to: 1002},
+        {from: 0005, to: 1003},
+        {from: 1008, to: 9004},
+        {from: 1008, to: 9005},
+	// Session 2
+        {from: 0001, to: 1001},
+        {from: 1001, to: 1002},
+        {from: 1002, to: 1003},
+        {from: 1003, to: 1005},
+        {from: 1005, to: 1008},
+        {from: 1008, to: 9001},
+	// Session 3
+        {from: 0001, to: 1001},
+        {from: 1001, to: 1002},
+        {from: 1002, to: 1006},
+        {from: 1006, to: 1008},
+        {from: 1008, to: 9001},
+	// Session 4
+        {from: 0001, to: 1001},
+        {from: 1001, to: 1002},
+        {from: 1002, to: 1007},
+        {from: 1007, to: 1008},
+        {from: 1008, to: 9001}
+    ]);
+
+    // create a network
+    var container = document.getElementById('mynetwork');
+
+    // provide the data in the vis format
+    var data = {
+        nodes: nodes,
+        edges: edges
+    };
+    var options = {};
+
+    // initialize your network!
+    var network = new vis.Network(container, data, options);
+</script>
+</body>
+</html>

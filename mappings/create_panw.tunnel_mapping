@@ -1,0 +1,5 @@
+# Ensure PANW.TUNNEL index has the correct type mappings.
+
+
+curl -XPUT localhost:9200/_template/panw.tunnel_template -H 'Content-Type: application/json' -d '
+

@@ -1,0 +1,2 @@
+curl -F key=LUFRPT10b21yUG9jall3TG5GNnVYWFJOcnBsRCtidFE9a1k1c2pidWNqSklrbkpzVTZRSzhGbSs1MXFybm1FNnpFREVvbUJpTERIMHJSbU4wUWVPOEJoVVQ0ZXoxaXdYUQ== --form file=@testuserid -k "https://192.168.55.10/api/?type=user-id"
+

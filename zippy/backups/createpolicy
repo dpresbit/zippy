@@ -1,0 +1,110 @@
+curl -X POST -k 'https://192.168.55.10/restapi/9.0/Policies/SecurityRules?location=vsys&vsys=vsys1&name=rule-example1' -H 'X-PAN-KEY: LUFRPT10b21yUG9jall3TG5GNnVYWFJOcnBsRCtidFE9a1k1c2pidWNqSklrbkpzVTZRSzhGbSs1MXFybm1FNnpFREVvbUJpTERIMHJSbU4wUWVPOEJoVVQ0ZXoxaXdYUQ==' -d '
+{
+
+    "entry": [
+
+            {
+
+                "@name": "rule-example1",
+
+                "@location": "vsys",
+
+                "@vsys": "vsys1",
+
+                "to": {
+
+                    "member": [
+
+                        "trust"
+
+                    ]
+
+                },
+
+                "from": {
+
+                    "member": [
+
+                        "untrust"
+
+                    ]
+
+                },
+
+                "source-user": {
+
+                    "member": [
+
+                        "any"
+
+                    ]
+
+                },
+
+                "application": {
+
+                    "member": [
+
+                        "web-browsing"
+
+                    ]
+
+                },
+
+                "service": {
+
+                    "member": [
+
+                        "application-default"
+
+                    ]
+
+                },
+
+                "hip-profiles": {
+
+                    "member": [
+
+                        "any"
+
+                    ]
+
+                },
+
+                "action": "allow",
+
+                "category": {
+
+                    "member": [
+
+                        "any"
+
+                    ]
+
+                },
+
+                "source": {
+
+                    "member": [
+
+                        "any"
+
+                    ]
+
+                },
+
+                "destination": {
+
+                    "member": [
+
+                        "any"
+
+                    ]
+
+                }
+
+            }
+
+            ]
+
+}'

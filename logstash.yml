@@ -1,0 +1,15 @@
+## Default Logstash configuration from logstash-docker.
+## from https://github.com/elastic/logstash-docker/blob/master/build/logstash/config/logstash-oss.yml
+#
+http.host: "0.0.0.0"
+node.name: "logstash"
+path.config: /usr/share/logstash/pipeline
+config.reload.automatic: true
+config.reload.interval: 3
+path.logs: /usr/share/logstash
+log.level: error
+log.format: plain
+xpack.monitoring.enabled: true
+xpack.monitoring.elasticsearch.hosts: ["http://elasticsearch:9200"] 
+xpack.monitoring.collection.interval: 10s
+xpack.monitoring.collection.pipeline.details.enabled: true
